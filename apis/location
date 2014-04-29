@@ -1,0 +1,96 @@
+
+-- the default number of trys before giving up
+tries = 3
+
+----
+location = vector.new(0,0,0)
+direction = 0
+
+-- table of functions on how to deal with stuff
+handle ={}
+
+-- lock so nobody else can access movement while somebody is in a movement
+
+function lock()
+end
+
+function unlock()
+end
+
+function saveLocation(vector)
+end
+
+function getLocation()
+end
+
+function createWaypoint(name, vector)
+end
+
+function deleteWaypoint(name)
+end
+
+function getWaypoints()
+end
+
+function getWaypoint(name)
+end
+
+function getGpsLocation()
+end
+
+function gpsUpdate()
+end
+
+function validateMove()
+end
+
+function handleNoFuel(fun)
+--	fuel slot/slots/all/pause/
+-- default and pause and request fuel
+end
+
+function handleTurtleBlock(fun)
+-- default wait a little while it still doesnt move break it
+end
+
+function handleBlock(fun)
+-- default retry and then return false and reason
+end
+
+function handleLock(fun)
+-- default return false and reason
+end
+
+
+local function blockHandler(agressive,
+
+
+--[[
+if we cant move forward try and guess why
+return false and the reason, detailed Reason
+
+1. fuel
+2. blocked
+	-turtle
+	-animal/player
+	-block(breakable)
+	-block(nonAgressive)
+	-block(unbreakable)
+]]--
+
+
+-- movements
+function forward(amount, agressive, tries, hijacked)
+end
+function back(amount, agressive, tries, hijacked)
+end
+function up(amount, agressive, tries, hijacked)
+end
+function down(amount, agressive, tries, hijacked)
+end
+function turnLeft(amount, agressive, tries, hijacked)
+end
+function turnRight(amount, agressive, tries, hijacked)
+end
+
+

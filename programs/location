@@ -1,0 +1,7 @@
+-- small program to set or get location
+
+-- set x y z d
+-- get returns x y z d
+-- set via gps    sets it shows x y z d    of says cant see any gps
+
+-- highjack

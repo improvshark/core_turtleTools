@@ -1,0 +1,18 @@
+-- can set the turtle resume function wich is saved and will be ran on startup
+
+
+-- maybe there should be an api
+-- and the program only runs the resume
+-- or maybe it
+
+
+-- maybe resume should be an os thing managed thing
+-- os handles resumeing and gives an api to set the resume
+function set(fun)
+end
+
+function get()
+end
+
+function clear()
+end
