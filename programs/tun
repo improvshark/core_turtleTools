@@ -1,0 +1,51 @@
+
+local tArgs ={...}
+
+
+
+function dig()
+  while turtle.detect() do
+    turtle.dig()
+  end
+end
+function digUp()
+  while turtle.detectUp() do
+    turtle.digUp()
+  end
+end
+function digDown()
+  while turtle.detectDown() do
+    turtle.digDown()
+  end
+end
+
+function tunnel(depth)
+  for i=1, depth do
+    fuel.reFuel()
+    dig()
+    turtle.forward()
+    digUp()
+    if turtle.detectDown() == false then
+      turtle.select(2)
+      print ("placing bridge")
+      turtle.placeDown(2)
+    end
+  end
+end
+function main()
+
+  local depth  = tArgs[1]
+  local remote = tArgs[2]
+  
+  if depth == nill then
+    print ("Usages:")
+    print ("tun <length>")
+  else
+    tunnel(depth)
+  end
+
+  
+
+end
+
+main()

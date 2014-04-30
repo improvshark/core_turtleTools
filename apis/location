@@ -62,7 +62,8 @@ function handleLock(fun)
 end
 
 
-local function blockHandler(agressive,
+local function blockHandler(agressive, hijacked)
+end
 
 
 --[[

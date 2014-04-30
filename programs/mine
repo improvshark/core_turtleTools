@@ -1,0 +1,129 @@
+
+height = 0 
+
+
+slot1 = 1 -- smooth stone
+slot2 = 2 -- dirt
+slot3 = 15 -- cobble
+fuelSlot = 16
+
+
+function checkFuel()
+	if turtle.getFuelLevel() < 60 then
+		slot = turtle.getSelectedSlot()
+		turtle.select(fuelSlot)
+		turtle.refuel(1)
+		turtle.select(slot)
+	end
+end
+
+function isValuable()
+	slot = turtle.getSelectedSlot()
+	valuable = true
+
+	turtle.select(slot1)
+	if turtle.compare() == true then
+		valuable = false
+	end
+
+	turtle.select(slot2)
+	if turtle.compare() == true then
+		valuable = false
+	end
+
+	turtle.select(slot)
+	return valuable
+end
+
+function dig()
+	if isValuable() then
+		turtle.dig()
+	end
+end
+
+function moveDown()
+	checkFuel()
+	turtle.digDown()
+	moved =  turtle.down()
+	if moved then
+		height = height - 1 ;
+	end
+	return moved
+end
+
+function moveUp()
+	checkFuel()
+	turtle.digUp()
+	moved = turtle.up()
+	if moved then
+		height = height +1;
+	end
+	return moved
+end
+
+function moveForward()
+	tries = 3
+
+	while tries > 0 do
+		turtle.dig()
+		if turtle.forward() == true then
+			return
+		else
+			turtle.digUp()
+			moveUp()
+		end
+		tries  = tries - 1
+
+	end
+
+end
+
+function placeUp(...)
+	slot = turtle.getSelectedSlot()
+	turtle.select(slot3)
+	turtle.placeUp()
+	turtle.select(slot)
+end
+
+function placeDown(...)
+	slot = turtle.getSelectedSlot()
+	turtle.select(slot3)
+	turtle.placeDown()
+	turtle.select(slot)
+end
+
+
+
+function mine()
+	moveDown()
+
+	while moveDown() do
+		if height == -2 then
+			placeUp()
+		end
+		for i = 1, 4 do
+			dig()
+			turtle.turnRight()
+		end
+	end
+
+	moveForward()
+	moveForward()
+	turtle.turnRight()
+	moveForward()
+	turtle.turnLeft()
+
+	while height < 0 do
+		for i = 1, 4 do
+			if height ~= -1 then
+				dig()
+			end
+			turtle.turnRight()
+		end
+		moveUp()
+	end
+	placeDown()
+end
+
+
+mine()
