@@ -1,13 +1,17 @@
 
 -- the default number of trys before giving up
 tries = 3
+statePath = core.coreDir() .. '/modules/turtleTools/apis/.locationState'
+wayPointPath = core.coreDir() .. '/modules/turtleTools/apis/.wayPoints'
 
 ----
-location = vector.new(0,0,0)
-direction = 0
+local location = {
+	coord = vector.new(0,0,0)
+	direction = 0
+}
 
 -- table of functions on how to deal with stuff
-handle ={}
+local handle ={}
 
 -- lock so nobody else can access movement while somebody is in a movement
 
@@ -18,21 +22,29 @@ function unlock()
 end
 
 function saveLocation(vector)
+	configman.save(statePath, location)
 end
 
-function getLocation()
+function loadLocation()
+	location = configman.load(statePath)
 end
 
-function createWaypoint(name, vector)
+function saveWaypoints(points)
+	configman.load(wayPointPath, points)
 end
 
-function deleteWaypoint(name)
+function loadWaypoints()
+	configman.load(wayPointPath)
 end
 
-function getWaypoints()
-end
-
-function getWaypoint(name)
+function addWaypoint(wayPointTable, nameArg, coordArg, directionArg )
+	if wayPointTable == nil or n == nil or c == nil then return false end
+	point ={}
+	point.name = nameArg 
+	point.coord = coordArg
+	if directionArg ~= nil then point.direction = directionArg end
+	table.insert (wayPointTable, point)
+	return configman.save(wayPointPath)
 end
 
 function getGpsLocation()
@@ -41,12 +53,13 @@ end
 function gpsUpdate()
 end
 
-function validateMove()
-end
-
 function handleNoFuel(fun)
 --	fuel slot/slots/all/pause/
 -- default and pause and request fuel
+end
+
+function handleAnimalBlock()
+	-- default is to atack until atack fails
 end
 
 function handleTurtleBlock(fun)
@@ -63,9 +76,6 @@ end
 
 
 local function blockHandler(agressive, hijacked)
-end
-
-
 --[[
 if we cant move forward try and guess why
 return false and the reason, detailed Reason
@@ -75,10 +85,18 @@ return false and the reason, detailed Reason
 	-turtle
 	-animal/player
 	-block(breakable)
+		-gravel/sand
 	-block(nonAgressive)
 	-block(unbreakable)
 ]]--
+end
 
+
+local function validateMove(functionCall)
+	fuel = turtle.getFuelLevel()
+	functionCall()
+	return (turtle.getFuelLevel() == fuel -1)
+end
 
 -- movements
 function forward(amount, agressive, tries, hijacked)

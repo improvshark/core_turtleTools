@@ -1,0 +1,47 @@
+arg = {...}
+
+
+
+
+function slot(amount)
+	for i = 1, amount do
+		turtle.dig()
+		turtle.forward()
+		turtle.digUp()
+		turtle.digDown()
+	end
+end
+
+function moveBack(amount)
+	for i = 1, amount do
+		turtle.back()
+	end
+end
+
+function checkFuel(amount, moveBack)
+	local level = amount
+	if moveBack == true then
+		level = amount * 2
+	end
+
+	if turtle.getFuelLevel() < level then
+		return false
+	end
+	return true
+end
+
+
+
+if tonumber(arg[1]) ~= nil then
+	if checkFuel(tonumber(arg[1]), false) ~= false then
+		slot(arg[1])
+		moveBack(arg[1])
+	end
+elseif tonumber(arg[1]) ~= nil and arg[2] == 'false' then
+	if checkFuel(tonumber(arg[1]), false) ~= false then
+		slot(arg[1])
+		moveBack(arg[1])
+	end
+else
+	print('bad command')
+end
