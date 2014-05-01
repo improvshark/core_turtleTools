@@ -1,4 +1,4 @@
 -- runs on unload
 
 print('stopping remote command daemon')
-shell.run('daemon', 'remove', core.coreDir() .. '/modules/turtleTools/daemons/remoteCommand')
+shell.run('daemon', 'kill', 'remoteCommand')
