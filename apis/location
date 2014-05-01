@@ -6,7 +6,7 @@ wayPointPath = core.coreDir() .. '/modules/turtleTools/apis/.wayPoints'
 
 ----
 local location = {
-	coord = vector.new(0,0,0)
+	coord = vector.new(0,0,0),
 	direction = 0
 }
 

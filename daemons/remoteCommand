@@ -1,0 +1,56 @@
+
+channel = 1337
+protocol = 'remote'
+--
+function getModem()
+	sides = {"front", "back", "left", "right", "top","bottom"}
+	for i = 1, #sides do
+		if peripheral.isPresent(sides[i])==true and tostring(peripheral.getType(sides[i])) == 'modem' then
+			return peripheral.wrap(sides[i]), sides[i]
+		end
+	end
+	return false
+end
+
+
+
+
+
+ modem , side = getModem()
+
+if modem == false then
+	print('no modem found!')
+	return
+else
+	print('starting modem')
+	if not modem.isOpen then
+		modem.open(channel)
+	end
+	if not rednet.isOpen(side) then
+		rednet.open(side)
+	end
+	rednet.host(protocol, os.getComputerLabel())
+end
+
+
+while true do
+	local senderId, message, distance = rednet.receive(protocol)
+	message = textutils.unserialize(message)
+	if message.messageType == 'function' then
+		if    message.message == 'getLabel'then
+			send = textutils.serialize({label = os.getComputerLabel()})
+			rednet.send(senderId,  send, protocol)
+		elseif message.message== 'getFuel' then
+			send = textutils.serialize({fuel = turtle.getFuelLevel()})
+			print(send)
+			rednet.send(senderId, send, protocol)
+		elseif message.message== 'getLocation' then
+			--rednet.send(senderId, os.getComputerLabel())
+		elseif message.message== 'reboot' then
+			os.reboot()
+		end
+	elseif message.messageType == 'command' then
+		send = textutils.serialize({success = shell.run(message.command)})
+		rednet.send(senderId, send, protocol)
+	end
+end
