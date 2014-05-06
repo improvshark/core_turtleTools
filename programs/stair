@@ -1,117 +1,91 @@
 
 
+function stepUp4()
+	pos.up(2, true)
+	while turtle.detectUp() do turtle.digUp() end
+	pos.forward(1, true)
+	pos.down(1, true)
+	if not turtle.detectDown() then place() end
+end
+
+function stepDown4()
+	pos.up(1, true)
+	while turtle.detectUp() do turtle.digUp() end
+	pos.forward(1,true)
+	while turtle.detectUp() do turtle.digUp() end
+	pos.down(2, true)
+	if not turtle.detectDown() then place() end
+end
+
+function stepUp3()
+	pos.up(1, true)
+	while turtle.detect() do turtle.dig() end
+	while turtle.detectUp() do turtle.digUp() end
+	pos.forward(1,true)
+	if not turtle.detectDown() then place() end
+	while turtle.detectUp() do turtle.digUp() end
+end
+
+function stepDown3()
+	while turtle.detectUp() do turtle.digUp() end
+	pos.forward(1, true)
+	while turtle.detectUp() do turtle.digUp() end
+	while turtle.detect() do turtle.dig() end
+	pos.down(1, true)
+	if not turtle.detectDown() then place() end
+end
+
 function place()
-  slot = 2
-  turtle.select(slot)
-  fuel.reFuel()
-  if turtle.detectDown() == false then
-    while turtle.getItemCount(slot) == 0 or turtle.compareTo(16) == true do
-      slot = slot + 1
-      if slot >= 16 then slot = 2 end
-      turtle.select(slot)
-    end
-    print ("placing block")
-    turtle.placeDown()
-  end
-end
-
-function dig()
-  turtle.select(1)
-  while turtle.compare() == true do
-    turtle.dig()
-    os.sleep(.5)
-  end
-  turtle.dig()
-end
-function digUp()
-  if turtle.detectUp() then
-    turtle.digUp()
-  end
-end
-function digDown()
-  if turtle.detectDown() then
-    turtle.digDown()
-  end
-end
-
-function stairUp()
-  print (" how big of a stair case? ")
-  local depth = io.read()
-
-  for i=1, depth do
-    fuel.reFuel()
-    place()
-    digUp()
-    turtle.up()
-    digUp()
-    dig()
-    turtle.forward()
-  end
-end
-
-function stairDown()
-  print (" how big of a stair case? ")
-  local depth = io.read()
-
-  for i=1, depth do
-    fuel.reFuel()
-    dig()
-    turtle.forward()
-    digUp()
-    dig()
-    digDown()
-    turtle.down()
-    place()
-  end
-end
-
-function oldStair()
-
-  for i=1, depth do
-    fuel.reFuel()
-    dig()
-    digUp()
-    turtle.forward()
-    place()
-    dig()
-    digUp()
-    turtle.forward()
-    dig()
-    turtle.forward()
-    digUp()
-    turtle.back()
-    digDown()
-    digUp()
-    turtle.down()
-    place()
-  end
-
+	currentSlot = turtle.getSelectedSlot()
+	for i = 1, 16 do
+		if turtle.getItemCount(i) > 0 then
+			if turtle.placeDown() then break end
+		end
+	end
+	turtle.select(currentSlot)
 end
 
 
-function main()
-  print("what kind?")
-  print("a. up")
-  print("b. down")
-  print("c. quit")
-  
-  input = io.read()
-  print (input)
-  while input ~= 'a' and input ~= 'b' and input ~= 'c'  do
-      print ("bad input? try again")
-      input = io.read()
-      print (input)
-  end
-
-  if input == 'a' then
-    stairUp()
-  end
-
-  if input == 'b' then
-   stairDown()
-  end
-
-      
+function checkForApi()
+	if not pos then
+		error( " pos API  not loaded on computer" )
+		return false
+	else
+		return true
+	end
 end
 
-main()
+
+
+
+arg = {...}
+
+if not checkForApi() then return end
+
+if arg[1] == nil then
+	print('useage:')
+	print('stair <up/down> <hight> - 3 high staircase')
+	print('stair <up2/down2> <hight> - 4 high staircase')
+
+elseif arg[1] == 'up' and tonumber(arg[2]) ~= nil then
+	for i = 1, arg[2] do
+		stepUp3()
+	end
+elseif arg[1] == 'down' and tonumber(arg[2]) ~= nil then
+	for i = 1, arg[2] do
+		stepDown3()
+	end
+elseif arg[1] == 'up2' and tonumber(arg[2]) ~= nil then
+	for i = 1, arg[2] do
+		stepUp4()
+	end
+elseif arg[1] == 'down2' and tonumber(arg[2]) ~= nil then
+	for i = 1, arg[2] do
+		stepDown4()
+	end
+else
+	print('unknown command')
+	print('useage:')
+	print('stair <up/down> <hight> - 3 high staircase')
+	print('stair <up2/down2> <hight> - 4 high staircase')
+end

@@ -1,20 +1,10 @@
-arg = {...}
-
-
-
 
 function slot(amount)
 	for i = 1, amount do
-		turtle.dig()
-		turtle.forward()
-		turtle.digUp()
+		while turtle.detect() do turtle.dig() end
+		pos.forward(1, true)
+		while turtle.detectUp() do turtle.digUp() end
 		turtle.digDown()
-	end
-end
-
-function moveBack(amount)
-	for i = 1, amount do
-		turtle.back()
 	end
 end
 
@@ -32,13 +22,30 @@ end
 
 
 
+function checkForApi()
+	if not pos then
+		error( " pos API  not loaded on computer" )
+		return false
+	else
+		return true
+	end
+end
+
+
+
+
+arg = {...}
+
+if not checkForApi() then return end
+
+
 if tonumber(arg[1]) ~= nil then
-	if checkFuel(tonumber(arg[1]), false) ~= false then
+	if checkFuel(tonumber(arg[1]), true) ~= false then
 		slot(arg[1])
-		moveBack(arg[1])
+		pos.back(arg[1], true)
 	end
 elseif tonumber(arg[1]) ~= nil and arg[2] == 'false' then
-	if checkFuel(tonumber(arg[1]), false) ~= false then
+	if checkFuel(tonumber(arg[1]), true) ~= false then
 		slot(arg[1])
 		moveBack(arg[1])
 	end

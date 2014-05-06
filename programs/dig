@@ -1,7 +1,3 @@
-arg = {...}
-tries = 3
-home = {}
-
 
 function amount(index)
 	-- check if there is another index
@@ -17,91 +13,35 @@ function amount(index)
 	end
 end
 
-function forward(amount)
-	try = tries
-	for i = 1, amount do
-		if turtle.detect() then turtle.dig() end
-		if not turtle.forward() then
-			if try > 0 then
-				i = i - 1
-				try = try - 1
-			end
-		end
-	end
+function checkForApi()
+  if not pos then
+    error( " pos API  not loaded on computer" )
+    return false
+  else
+    return true
+  end
 end
 
-function up(amount)
-	try = tries
-	for i = 1, amount do
-		if turtle.detectUp() then turtle.digUp() end
-		if not turtle.up() then
-			if try > 0 then
-				i = i - 1
-				try = try - 1
-			end
-		end
-	end
-end
+arg = {...}
 
-function down(amount)
-	try = tries
-	for i = 1, amount do
-		if turtle.detectDown() then turtle.digDown() end
-		if not turtle.down() then
-			if try > 0 then
-				i = i - 1
-				try = try - 1
-			end
-		end
-	end
-end
-
-function back(amount)
-	for i = 1, amount do
-		if turtle.back() then
-			if try > 0 then
-				i = i - 1
-				try = try - 1
-			end
-		end
-	end
-end
-
-function right(amount)
-	for i = 1, amount do
-		turtle.turnRight()
-	end
-end
-
-function left(amount)
-	for i = 1, amount do
-		turtle.turnLeft()
-	end
-end
-
-
-function home()
-	for i = 1, amount do
-		turtle.turnLeft()
-	end
-end
+if not checkForApi() then return end
 
 for i = 1, #arg do
 	if arg[i] == nil then break end
 	move = arg[i]
 
-	if 	   move == "f" or move == "fd"  or move == "forward"  then
-		forward(amount(i))
+	if move == "f" or move == "fd"  or move == "forward"  then
+		pos.forward(amount(i), true)
 	elseif move == "u" or move == "up"  then
-		up(amount(i))
+		pos.up(amount(i), true)
 	elseif move == "d" or move == "dn"  or move == "down"  then
-		down(amount(i))
+		pos.down(amount(i), true)
 	elseif move == "b" or move == 'bk'  or move == "back"  then
-		back(amount(i))
+		pos.back(amount(i), true)
 	elseif move == "r" or move == "rt" or move == "rightTurn"  then
-		right(amount(i))
+		pos.turnRight(amount(i))
 	elseif move == "l" or move == "lt" or move == "leftTurn"  then
-		left(amount(i))
+		pos.turnLeft(amount(i))
 	end
 
 end

@@ -17,22 +17,22 @@ local function copy (t) -- shallow-copy a table
     return target
 end
 
-function highJackCommands()
-
-	turtle.forward = pos.forwardH
-	turtle.back = pos.backH
-	turtle.turnLeft = pos.turnLeftH
-	turtle.turnRight = pos.turnRightH
-	turtle.up = pos.upH
-	turtle.down = pos.downH
+function hiJackCommands()
+	print('hijacking turtle api')
+	pos.hijackTurtleAPI(false)
 end
 
+
+function restoreCommands()
+	print('restoring turtle api')
+	pos.hijackTurtleAPI(true)
+end
 
 
 if not pos then
 	print('pos api not loaded')
 elseif arg[1] == 'set' and tonumber(arg[2]) and tonumber(arg[3]) and tonumber(arg[4]) and  arg[5] ~= nil then
-
+	pos.setLocation(arg[2],arg[3],arg[4],arg[5])
 elseif arg[1] == 'gps' and (tonumber(arg[2]) >= 0 or tonumber(arg[2]) <= 3 or arg[2] == 'north' or arg[2] == 'south' or arg[2] == 'east' or arg[2] == 'west' ) then
 	pos.gpsUpdate(arg[2])
 	x,y,z = gps.locate()
@@ -44,8 +44,8 @@ elseif arg[1] == 'gps' and (tonumber(arg[2]) >= 0 or tonumber(arg[2]) <= 3 or ar
 elseif  arg[1] == 'get' then
 	loc = pos.getPosition()
 	print('x: '..loc.coord.x..' y: '.. loc.coord.y..' z: '..loc.coord.z..' f: '..loc.direction )
-elseif  arg[1] == 'highjack' then
-	highJackCommands()
+elseif  arg[1] == 'hijack' then
+	hiJackCommands()
 elseif  arg[1] == 'restore' then
 	restoreCommands()
 else
@@ -53,7 +53,7 @@ else
 	print('location <set> <x> <y> <z> <f>')
 	print('location <gps> <f>')
 	print('location <get>')
-	print('location <highjack> -replaces turtle.commands')
+	print('location <hijack> -replaces turtle.commands')
 	print('location <restore> -restores turtle.commands')
 end
 

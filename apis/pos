@@ -1,11 +1,11 @@
 
 -- Configs
-triesDefault = 3
+triesDefault = 4  --have to have at least 1
 statePath = core.coreDir() .. '/modules/turtleTools/apis/.locationState'
 
 
 gravelWaitTime = .25
-turtleWaitTime = 3
+turtleWaitTime = 5
 baseFuelLevel = 10
 
 ---- end Configs
@@ -21,6 +21,14 @@ directions = {
 	[3] = 'east',
 }
 
+orig_turtle = {
+            forward   = turtle.forward,
+            back      = turtle.back,
+            up        = turtle.up,
+            down      = turtle.down,
+            turnRight = turtle.turnRight,
+            turnLeft  = turtle.turnLeft
+        }
 -- some getters
 
 function getPosition() -- returns a copy of location
@@ -45,10 +53,30 @@ local function saveLocation()
 end
 
 local function loadLocation()
-	location = configman.load(statePath)
+	temp = configman.load(statePath)
+	location.coord.x = tonumber(temp.coord.x)
+	location.coord.y = tonumber(temp.coord.y)
+	location.coord.z = tonumber(temp.coord.z)
+	location.direction = tonumber(temp.direction)
+
+	if location == nil then
+		saveLocation()
+	end
+end
+loadLocation()
+
+
+function setLocation(x,y,z,f)
+	if tonumber(x) == nil or tonumber(y) == nil or tonumber(z) == nil or tonumber(f)== nil then return false end
+	location.direction = f
+	location.coord.x = x
+	location.coord.y = y
+	location.coord.z = z
+	saveLocation()
 end
 
 function gpsUpdate(f)
+	--todo get direction facing by moving and checking gps again
 	x, y, z = gps.locate()
 	if x ~= nil then
 		location.x = x
@@ -133,6 +161,7 @@ end
 
 handle.turtle = function(side, agressive)
 -- default wait a little while if still doesnt move break it
+	print('found a trutle')
 	if not agressive then return false end
 	sleep(turtleWaitTime)
 	if detectTurtle(side) then
@@ -152,13 +181,17 @@ handle.unbreakable = function(side)
 end
 
 handle.gravel = function(side)
-	print('begin handle gravel')
-	while turtle.detect() do
-		if side == 'front' then turtle.dig()
-		elseif side == 'top' then turtle.digUp()
-		elseif side == 'bottom' then turtle.digDown()end
-		sleep(gravelWaitTime)
+	print('handle gravel')
+	
+	if side == 'front' then  
+		while turtle.detect() do turtle.dig() end
+	elseif side == 'top' then 
+		while turtle.detectUp() do turtle.digUp() end
+	elseif side == 'bottom' then 
+		while turtle.detectDown() do turtle.digDown() end 
 	end
+		sleep(gravelWaitTime)
+	
 end
 
 handle.block = function(side, agressive)
@@ -177,10 +210,10 @@ end
 
 local function move(direction)
 	fuel = turtle.getFuelLevel()
-	if direction == 'forward' then turtle.forward()
-	elseif direction == 'up' then turtle.up() 
-	elseif direction == 'down' then turtle.down() 
-	elseif direction == 'back' then turtle.back() end
+	if direction == 'forward' then orig_turtle.forward()
+	elseif direction == 'up' then orig_turtle.up() 
+	elseif direction == 'down' then orig_turtle.down() 
+	elseif direction == 'back' then orig_turtle.back() end
 	moved =  (turtle.getFuelLevel() == fuel -1)
 	if moved == true then
 
@@ -194,7 +227,7 @@ local function move(direction)
 			elseif location.direction == 3 then
 				location.coord.x = location.coord.x + 1
 			end
-		elseif direction == 'back ' then
+		elseif direction == 'back' then
 			if location.direction == 0 then
 				location.coord.z = location.coord.z - 1
 			elseif location.direction == 1 then
@@ -236,7 +269,7 @@ end
 function turnRight(amount)
 	if amount == nil then amount = 1 end
 	for i = 1, amount do
-		if turtle.turnRight() then
+		if orig_turtle.turnRight() then
 			if location.direction < 3 then 
 				location.direction = location.direction + 1 
 			elseif location.direction >= 3 then
@@ -251,7 +284,7 @@ end
 function turnLeft(amount)
 	if amount == nil then amount = 1 end
 	for i = 1, amount do
-		if turtle.turnLeft() then 
+		if orig_turtle.turnLeft() then 
 			if location.direction <= 0 then 
 				location.direction = 3
 			elseif location.direction > 0 then
@@ -275,32 +308,35 @@ function forward(amount, agressive, tries, hijacked)
 		tries = 0 
 	end
 	local movements = 0
-	try = tries
 	for i = 1, amount do
 		local moved = false
-		if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
-		if detectTurtle('front') then handle.turtle('front', agressive) end
-		if detectAnimal('front') then handle.animal('front') end
-		if detectBlock('front') then handle.block('front', agressive) end
-
-		moved = move('forward')
-		if not moved and agressive then 
-			handle.gravel('front')  
-			moved = move('forward')
-		end
-		if not moved then
-			print('failed to move')
-			sleep(10)
-			if try > 0 then
-				print('used a try')
-				i = i -1
-				try = try -1
+		for i = 1, tries do
+			if i > 1 then
+				print ('useing a try')
 			end
-		else
-			movements = movements +1 
+			if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
+			if detectTurtle('front') then handle.turtle('front', agressive) end
+			if detectAnimal('front') then handle.animal('front') end
+			if detectBlock('front') then handle.block('front', agressive) end
+
+			moved = move('forward')
+			if not moved and agressive then 
+				handle.gravel('front')  
+				moved = move('forward')
+			end
+			if not moved then
+				print('failed to move')
+			else
+				movements = movements +1 
+				break
+			end
 		end
 	end
-	return amount == movements, movements
+	if not hijacked then
+		return amount == movements, movements
+	else
+		return amount == movements
+	end
 end
 function up(amount, agressive, tries, hijacked)
 	if amount == nil then amount = 1 end
@@ -314,28 +350,31 @@ function up(amount, agressive, tries, hijacked)
 		tries = 0 
 	end
 	local movements = 0
-	try = tries
 	for i = 1, amount do
 		local moved = false
-		if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
-		if detectTurtle('top') then handle.turtle('top', agressive) end
-		if detectAnimal('top') then handle.animal('top') end
-		if detectBlock('top') then handle.block('top', agressive) end
-		moved = move('up')
-		if not moved and agressive then 
-			handle.gravel('top')  
+		for i = 1, tries do
+			if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
+			if detectTurtle('top') then handle.turtle('top', agressive) end
+			if detectAnimal('top') then handle.animal('top') end
+			if detectBlock('top') then handle.block('top', agressive) end
 			moved = move('up')
-		end
-		if not moved then
-			if try > 0 then
-				i = i -1
-				try = try -1
+			if not moved and agressive then 
+				handle.gravel('top')  
+				moved = move('up')
 			end
-		else
-			movements = movements +1 
+			if not moved then
+				print('failed to move')
+			else
+				movements = movements +1 
+				break
+			end
 		end
 	end
-	return amount == movements, movements
+	if not hijacked then
+		return amount == movements, movements
+	else
+		return amount == movements
+	end
 end
 function down(amount, agressive, tries, hijacked)
 	if amount == nil then amount = 1 end
@@ -349,28 +388,31 @@ function down(amount, agressive, tries, hijacked)
 		tries = 0 
 	end
 	local movements = 0
-	try = tries
 	for i = 1, amount do
 		local moved = false
-		if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
-		if detectTurtle('bottom') then handle.turtle('bottom', agressive) end
-		if detectAnimal('bottom') then handle.animal('bottom') end
-		if detectBlock('bottom') then handle.block('bottom', agressive) end
-		moved = move('down')
-		if not moved and agressive then 
-			handle.gravel('bottom')  
+		for i = 1, tries do
+			if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
+			if detectTurtle('bottom') then handle.turtle('bottom', agressive) end
+			if detectAnimal('bottom') then handle.animal('bottom') end
+			if detectBlock('bottom') then handle.block('bottom', agressive) end
 			moved = move('down')
-		end
-		if not moved then 
-			if try > 0 then
-				i = i -1
-				try = try -1
+			if not moved and agressive then 
+				handle.gravel('bottom')  
+				moved = move('down')
 			end
-		else
-			movements = movements +1 
+			if not moved then
+				print('failed to move')
+			else
+				movements = movements +1 
+				break
+			end
 		end
 	end
-	return amount == movements, movements
+	if not hijacked then
+		return amount == movements, movements
+	else
+		return amount == movements
+	end
 end
 
 function back(amount, agressive, tries, hijacked)
@@ -385,59 +427,70 @@ function back(amount, agressive, tries, hijacked)
 		tries = 0 
 	end
 	local movements = 0
-	try = tries 
 	turned = false
 	for i = 1, amount do
 		local moved = false
-		if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
-		
-		if turned then
-			moved = forward(1,agressive,tries,hijacked)
-		else
-			moved = move('back')
-			if not moved then 
-				turnRight(2)
-				turned = true
-				moved = forward(1,agressive,tries,hijacked)
+		for i = 1, tries do
+			if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
+			
+			if turned then
+				moved = forward(1,agressive,1,hijacked)
+			else
+				moved = move('back')
+				if not moved then 
+					turnRight(2)
+					turned = true
+					moved = forward(1,agressive,1,hijacked)
+				end
 			end
-		end
-		if not moved then 
-			if try > 0 then
-				i = i -1
+			if not moved then
+				print('failed to move')
+			else
+				movements = movements +1 
+				break
 			end
-		else
-			movements = 1 + tonumber(movements) 
 		end
 	end
 	if turned then turnRight(2) end
-	return amount == movements, movements
+	if not hijacked then
+		return amount == movements, movements
+	else
+		return amount == movements
+	end
 end
 
-
-function forwardH() 
-	forward(1,false,0,true)
+function hijackTurtleAPI(restore)
+    -- Wrap methods to avoid accidentally passing parameters along. This is
+    -- done to make sure behavior is the same even if the functions are
+    -- called with (unused/invalid) parameters.
+    if restore then
+        if not turtle._pos then return end
+        turtle.forward   = turtle._pos.forward
+        turtle.back      = turtle._pos.back
+        turtle.up        = turtle._pos.up
+        turtle.down      = turtle._pos.down
+        turtle.turnRight = turtle._pos.turnRight
+        turtle.turnLeft  = turtle._pos.turnLeft
+        turtle._pos = nil
+    else
+        if turtle._pos then return end
+        turtle._pos = {
+            forward   = turtle.forward,
+            back      = turtle.back,
+            up        = turtle.up,
+            down      = turtle.down,
+            turnRight = turtle.turnRight,
+            turnLeft  = turtle.turnLeft,
+            refuel    = turtle.refuel
+        }
+        turtle.forward   = function() return move('forward') ~= false end
+        turtle.back      = function() return move('back') ~= false end
+        turtle.up        = function() return move('up') ~= false end
+        turtle.down      = function() return move('down') ~= false end
+        turtle.turnRight = function() return turnRight() ~= false end
+        turtle.turnLeft  = function() return turnLeft() ~= false end
+    end
 end
-
-function backH() 
-	back(1,false,0,true)
-end
-
-function upH() 
-	up(1,false,0,true)
-end
-
-function downH() 
-	forward(1,false,0,true)
-end
-
-function turnLeftH() 
-	turnLeft(1)
-end
-
-function turnRightH() 
-	turnRight(1)
-end
-
 
 
 

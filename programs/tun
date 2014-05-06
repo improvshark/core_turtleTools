@@ -1,51 +1,93 @@
 
-local tArgs ={...}
+function amount(index)
+-- check if there is another index
+	if arg[index+1] == nill then return 1 end
 
+	nextArg = arg[index+1]
 
-
-function dig()
-  while turtle.detect() do
-    turtle.dig()
-  end
-end
-function digUp()
-  while turtle.detectUp() do
-    turtle.digUp()
-  end
-end
-function digDown()
-  while turtle.detectDown() do
-    turtle.digDown()
-  end
+	if tonumber(nextArg) ~= nil then
+		table.remove(arg, index+1)
+		return tonumber(nextArg)
+	else
+		return 1
+	end
 end
 
-function tunnel(depth)
-  for i=1, depth do
-    fuel.reFuel()
-    dig()
-    turtle.forward()
-    digUp()
-    if turtle.detectDown() == false then
-      turtle.select(2)
-      print ("placing bridge")
-      turtle.placeDown(2)
-    end
-  end
-end
-function main()
-
-  local depth  = tArgs[1]
-  local remote = tArgs[2]
-  
-  if depth == nill then
-    print ("Usages:")
-    print ("tun <length>")
-  else
-    tunnel(depth)
-  end
-
-  
-
+function place()
+	currentSlot = turtle.getSelectedSlot()
+	for i = 1, 16 do
+		if turtle.getItemCount(i) > 0 then
+			if turtle.placeDown() then break end
+		end
+	end
+	turtle.select(currentSlot)
 end
 
-main()
+function checkForApi()
+	if not pos then
+		error( " pos API  not loaded on computer" )
+		return false
+	else
+		return true
+	end
+end
+
+arg = {...}
+
+if not checkForApi() then return end
+
+
+if tonumber(arg[1]) ~= nill then
+
+	for i = 1, arg[1] do
+		pos.forward(1, true)
+		turtle.digUp()
+		if not turtle.detectDown() then place() end
+	end
+
+else
+
+	for i = 1, #arg do
+		if arg[i] == nil then break end
+		move = arg[i]
+
+		if move == "f" or move == "fd"  or move == "forward"  then
+
+			for i = 1, amount(i) do
+				pos.forward(1, true)
+				turtle.digUp()
+				if not turtle.detectDown() then place() end
+			end
+
+		elseif move == "u" or move == "up"  then
+
+			for i = 1, amount(i) do
+				pos.up(1, true)
+				turtle.digUp()
+			end
+
+		elseif move == "d" or move == "dn"  or move == "down"  then
+
+			for i = 1, amount(i) do
+				pos.down(1, true)
+				turtle.digUp()
+				if not turtle.detectDown() then place() end
+			end
+
+		elseif move == "b" or move == 'bk'  or move == "back"  then
+
+			for i = 1, amount(i) do
+			pos.back(1, true)
+			turtle.digUp()
+			if not turtle.detectDown() then place() end
+			end
+
+		elseif move == "r" or move == "rt" or move == "rightTurn"  then
+			pos.turnRight(amount(i))
+		elseif move == "l" or move == "lt" or move == "leftTurn"  then
+			pos.turnLeft(amount(i))
+		end
+
+	end
+
+end
