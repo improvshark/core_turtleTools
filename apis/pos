@@ -54,14 +54,17 @@ end
 
 local function loadLocation()
 	temp = configman.load(statePath)
+	if temp == nil then
+		saveLocation()
+		temp = configman.load(statePath)
+	end
+
 	location.coord.x = tonumber(temp.coord.x)
 	location.coord.y = tonumber(temp.coord.y)
 	location.coord.z = tonumber(temp.coord.z)
 	location.direction = tonumber(temp.direction)
 
-	if location == nil then
-		saveLocation()
-	end
+	
 end
 loadLocation()
 
