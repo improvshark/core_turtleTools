@@ -128,7 +128,7 @@ startPos = pos.getPosition()
 
 dimensions = vector.new( tonumber(arg[1]), tonumber(arg[2]), tonumber(arg[3]))
 	
-if dimensions.x ~= nil and dimensions.y ~= nil and dimensions.z ~= nil then
+if tonumber(arg[1]) ~= nil and tonumber(arg[2]) ~= nil and tonumber(arg[3]) ~= nil then
 	
 	if not enoughFuel(dimensions) then
 		print('Not enough Fuel to complete task.')
