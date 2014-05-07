@@ -1,0 +1,144 @@
+
+--config
+fuelBuffer = 300
+--endConfig
+
+--globalVars
+startPos = nil
+--end GlobalVars
+
+handle = {
+	full = function()
+		-- go to start location and drop junk
+		-- uses nav.goto
+	end,
+	afterResume = function() end,
+	onComplete = function() end
+}
+
+function setResume(currentPos, dim)
+	-- pos.goTo(currentPos)
+	-- shell.run('ex' dim.x, dim.y, dim, z)
+	-- uses core.resume(function) to set the resume
+	-- runs this program but at the start of the unfinished layer
+end
+
+function isFull()
+	fullCount = 0
+	for i = 1, 16 do
+		if turtle.getItemSpace(i) ~= 0 then
+			fullCount = fullCount +1
+		end
+	end
+	return fullCount == 16
+end
+
+function digLine(length, layersLeft)
+		digUp = pos.getPosition().coord.y ~= startPos.coord.y
+	for i =1, length -1 do
+		while digUp and turtle.detectUp() do
+			if turtle.digUp() and isFull() then handle.full() end
+		end
+
+		if layersLeft > 1 and turtle.digDown() and isFull() then handle.full() end
+
+		pos.forward(1,true)
+		if isFull then handle.full() end
+
+		if layersLeft > 1 and turtle.digDown() and isFull() then handle.full() end
+
+		while digUp and turtle.detectUp() do
+			if turtle.digUp() and isFull() then handle.full() end
+		end
+	end
+end
+
+function	excavate(dim)
+	if dim.y <= 0 then return end
+	
+	curPos = pos.getPosition()
+	completed = startPos.coord.y - curPos.coord.y
+	layersLeft = dim.y - completed
+	setResume(curPos, dim)
+	
+	rightTurn = true
+	
+	--if 3 move down 1
+	if dim.y >= 3 then
+		pos.down(1,true)
+	end
+	
+	for i=1, dim.x do
+		digLine(dim.z,dim.y)
+		if rightTurn and i ~= dim.x then
+			pos.turnRight()
+			pos.forward(1,true)
+			pos.turnRight()
+			rightTurn = false
+		elseif i ~= dim.x then
+			pos.turnLeft()
+			pos.forward(1,true)
+			pos.turnLeft()
+			rightTurn = true
+		end
+	end
+	
+	if dim.y >= 3 then
+		dim.y = dim.y - 3
+		if dim.y > 0 then
+			pos.down(2,true)
+		end
+	elseif dim.y == 2 then
+		dim.y = dim.y -2
+	elseif dim.y == 1 then
+		dim.y = dim.y -1
+	end
+	
+	if dim.x % 2 == 0 then
+		pos.turnRight()
+		excavate( vector.new(dim.z,dim.y,dim.x) )-- swaped x and z
+	else
+		pos.turnRight(2)
+		excavate( dim )
+	end
+end
+
+function enoughFuel(dim)
+	fuelLevel = turtle.getFuelLevel()
+	if fuelLevel >= (dim.x*dim.y*dim.z) + fuelBuffer then
+		return true
+	end
+	return false
+end
+
+function checkForApi()
+	if not pos then
+		error( " pos API  not loaded on computer" )
+		return false
+	else
+		return true
+	end
+end
+
+arg = {...}
+if not checkForApi() then return end
+
+startPos = pos.getPosition()
+
+
+dimensions = vector.new( tonumber(arg[1]), tonumber(arg[2]), tonumber(arg[3]))
+	
+if dimensions.x ~= nil and dimensions.y ~= nil and dimensions.z ~= nil then
+	
+	if not enoughFuel(dimensions) then
+		print('Not enough Fuel to complete task.')
+		print('Give me more fuel and I might do the job')
+	else
+		pos.forward(1,true)
+		excavate(dimensions)
+		handle.onComplete()
+	end
+else
+	print('usage: ')
+	print('ex <x> <y> <z> [<handler table>]')
+end
