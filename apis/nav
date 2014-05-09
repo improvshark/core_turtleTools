@@ -12,9 +12,57 @@ end
 function addWaypoint(wayPointTable, nameArg, coordVector, directionArg )
 	if wayPointTable == nil or n == nil or c == nil then return false end
 	point ={}
-	point.name = nameArg 
+	point.name = nameArg
 	point.coord = coordVector
 	if directionArg ~= nil then point.direction = directionArg end
 	table.insert (wayPointTable, point)
 	return configman.save(wayPointPath)
 end
+
+
+function turn(f)
+	while f ~= pos.getPosition().direction do
+		pos.turnRight()
+	end
+end
+
+function gotoX(x, agressive)
+	currentX = pos.getPosition().coord.x
+	if x > currentX then
+		turn(3)
+		pos.forward(x - currentX, agressive)
+	elseif x < currentX then
+		turn(1)
+		pos.forward(currentX-x, agressive)
+	end
+end
+
+function gotoY(y, agressive)
+	currentY = pos.getPosition().coord.y
+	if y > currentY then
+		pos.up(y - currentY, agressive)
+	elseif y < currentY then
+		turn(1)
+		pos.down(currentY-y, agressive)
+	end
+end
+
+function gotoZ(z, agressive)
+	currentZ = pos.getPosition().coord.z
+	if z > currentZ then
+		turn(0)
+		pos.forward(z - currentZ, agressive)
+	elseif z < currentZ then
+		turn(2)
+		pos.forward(currentZ-z, agressive)
+	end
+end
+
+function gotoPos(obj, agressive)
+	currentPos = pos.getPosition()
+	gotoX(obj.coord.x, agressive)
+	gotoY(obj.coord.y, agressive)
+	gotoZ(obj.coord.z, agressive)
+	turn(obj.direction)
+end
+

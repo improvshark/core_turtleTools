@@ -1,0 +1,198 @@
+-------------------------------
+--         jukebox           -- 
+--       by improvshark      --
+--                           --
+-------------------------------
+
+
+function read()
+        local timeout = os.startTimer(2)
+        local sEvent, param = os.pullEvent()
+        if sEvent == 'timer' and param == timeout then
+          -- do nothing
+        elseif sEvent == "key" then
+            return param
+        end
+end
+
+function findDrive()
+	if peripheral.getType("top") == "drive" then
+		return "top"
+	elseif peripheral.getType("bottom") == "drive" then
+		return "bottom"
+	elseif peripheral.getType("left") == "drive" then
+		return "left"
+	elseif peripheral.getType("right") == "drive" then
+		return "right"
+	elseif peripheral.getType("back") == "drive" then
+		return "back"
+	end
+
+	return false
+
+end
+
+function getTime(string)
+	songs = {"C418 - 13", "C418 - cat", "C418 - blocks", "C418 - chirp", "C418 - far",
+					 "C418 - mall", "C418 - mellohi", "C418 - stal", "C418 - strad",
+					  "C418 - ward", "C418 - 11", "wait", "pg.stillalive" , "pg.wantyougone"}
+	times = {178, 185, 345, 185, 174, 197, 96, 150, 188, 251, 74, 238, 176, 140 }
+
+	for i=1, #songs do
+		if string == songs[i] then
+			return times[i]
+		end
+	end
+
+	return false
+end
+
+function drop(direction)
+	--print ("got direction: " .. direction)
+	if direction == "top" then turtle.dropUp()
+	elseif direction == "bottom" then turtle.dropDown()
+	elseif direction == "right" then turtle.turnRight() turtle.drop() turtle.turnLeft()
+	elseif direction == "left" then turtle.turnLeft() turtle.drop() turtle.turnRight()
+	elseif direction == "back" then turtle.turnLeft() turtle.turnLeft() turtle.drop() turtle.turnRight() turtle.turnRight()
+	end
+end
+
+
+function suck(direction)
+	--print ("got direction: " .. direction)
+	if direction == "top" then turtle.suckUp()
+	elseif direction == "bottom" then turtle.suckDown()
+	elseif direction == "right" then turtle.turnRight() turtle.suck() turtle.turnLeft()
+	elseif direction == "left" then turtle.turnLeft() turtle.suck() turtle.turnRight()
+	elseif direction == "back" then turtle.turnLeft() turtle.turnLeft() turtle.suck() turtle.turnRight() turtle.turnRight()
+	end
+end
+
+function randomNumber()
+	local rand = math.random(0,invSize)
+	return rand
+end
+
+function getRandomDisk()
+	repeat slot = randomNumber()
+	until slot ~= 0 and turtle.getItemCount(slot) == 1
+	--print("got a disk from slot " .. slot)
+	return slot
+
+end
+
+function putAway()
+	suck(side)
+	--print("put away the disk")
+end
+
+function  wait(waitTime)
+	posX = 8
+	posY = 8
+	term.setCursorPos(1,posY)
+	count = waitTime
+	interval = math.floor(waitTime/25)
+	print("      <.........................>      ")
+	
+	for i=1, waitTime do
+	
+		button = read()
+		
+		if button == 49 or button == 205 then
+			term.clear()
+			term.setCursorPos(1,1)
+			print("                                     ")
+			print("       _   _             _   _       ")
+			print("    __| |_(_)_ __        \\ \\ \\ \\     ")
+			print("   (_-< / / | '_ \\ -------\\ \\ \\ \\    ")
+			print("   /__/_\\_\\_| .__/ -------/ / / /    ")
+			print("            |_|          /_/ /_/     ")
+			print("                                     ")
+			print("               \\ \\ \\ \\     ")
+			print(" ---------------\\ \\ \\ \\    ")
+			print(" ---------------/ / / /    ")
+			print("               /_/ /_/     ")
+			print("                                     ")
+		  break
+
+		end
+		
+		if	count%interval == 0 then
+			term.setCursorPos(posX,posY)
+			print("x")
+			posX = posX +1
+		end
+		
+		-- how long left
+		term.setCursorPos(1,12)
+		print("                                     ")
+		term.setCursorPos(1,12)
+		min = count/60
+		min = math.floor(min)
+		sec = count - (min*60)
+		print("length:  " .. min ..":"..sec)
+		count = count - 1
+		os.sleep(0.04)
+	end
+	
+end
+
+function play(slot)
+	if slot ~= nil then
+		turtle.select(slot)
+	end
+	drop(side)
+
+	title =disk.getAudioTitle(side)
+	--print("title: " .. title)
+	time = getTime(title)
+	if time == false then
+		print("corupt Disk")
+	else
+		--shell.run("dj")
+		disk.playAudio(side)
+		--terminal
+		term.clear()
+		term.setCursorPos(1,1)
+		print("--------------------------------------")
+		print("     _      _       _                ")
+		print("    (_)_  _| |_____| |__  _____ __   ")
+		print("    | | || | / / -_) '_ \\/ _ \\ \\ /   ")
+		print("   _/ |\\_,_|_\\_\\___|_.__/\\___/_\\_\\   ")
+		print("  |__/                               ")
+		print("                                     ")
+		print("                                     ")
+		print("--------------Now-Playing-------------")
+		print("                                     ")
+		print("song:    " .. title)
+		print("length:  " .. time)
+		
+
+		wait(time)
+		
+	end
+end
+
+function main()
+	side = findDrive()
+	
+	done = false
+
+	if side ~= false then
+		--inv = peripheral.wrap(side)
+		print ("drive is on side: " .. side)
+	else
+		print("cant find drive")
+		done = true
+	end 
+
+	while done ~= true do
+		invSize = 16
+		slot = getRandomDisk()
+		play(slot)
+		putAway()	
+	end
+end
+
+main()
+
