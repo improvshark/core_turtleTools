@@ -31,8 +31,8 @@ end
 
 if not pos then
 	print('pos api not loaded')
-elseif arg[1] == 'set' and tonumber(arg[2]) and tonumber(arg[3]) and tonumber(arg[4]) and  arg[5] ~= nil then
-	pos.setLocation(arg[2],arg[3],arg[4],arg[5])
+elseif arg[1] == 'set' and tonumber(arg[2]) and tonumber(arg[3]) and tonumber(arg[4]) and  tonumber(arg[5]) then
+	pos.setLocation(tonumber(arg[2]),tonumber(arg[3]),tonumber(arg[4]),tonumber(arg[5]) )
 elseif arg[1] == 'gps' and (tonumber(arg[2]) >= 0 or tonumber(arg[2]) <= 3 or arg[2] == 'north' or arg[2] == 'south' or arg[2] == 'east' or arg[2] == 'west' ) then
 	pos.gpsUpdate(arg[2])
 	x,y,z = gps.locate()
@@ -56,4 +56,3 @@ else
 	print('location <hijack> -replaces turtle.commands')
 	print('location <restore> -restores turtle.commands')
 end
-

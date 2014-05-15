@@ -134,7 +134,7 @@ if tonumber(arg[1]) ~= nil and tonumber(arg[2]) ~= nil and tonumber(arg[3]) ~= n
 		print('Not enough Fuel to complete task.')
 		print('Give me more fuel and I might do the job')
 	else
-		pos.forward(1,true)
+		--pos.forward(1,true)
 		excavate(dimensions)
 		handle.onComplete()
 	end
