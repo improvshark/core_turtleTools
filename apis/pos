@@ -93,6 +93,16 @@ function gpsUpdate(f)
 	saveLocation()
 end
 
+function detectFull()
+	fullCount = 0
+	for i = 1, 16 do
+		if turtle.getItemCount(i) > 0 then
+			fullCount = fullCount +1
+		end
+	end
+	return fullCount == 16
+end
+
 local function detectTurtle(side)
 	if peripheral.getType(side) == 'turtle' then
 		return true
@@ -125,7 +135,7 @@ end
 -- table of functions on how to deal with stuff
 handle ={}
 
-local function fuelPause() 
+handle.fuelPause =  function() 
   
   print ("no Fuel left!")
   print ("a. continue")
@@ -145,6 +155,12 @@ local function fuelPause()
   end
 end
 
+
+handle.full = function()
+	--default do nothing
+	print('invintory full')
+end
+
 handle.fuel = function()
 	-- go through all slots try to refuel if none pause and ask for some
 	fueled = false
@@ -156,7 +172,7 @@ handle.fuel = function()
 			fueled = turtle.refuel(1)
 		end
 	end
-	if fuelPause() then
+	if handle.fuelPause() then
 		handle.fuel()
 	end
 	turtle.select(currentSlot)
@@ -164,7 +180,7 @@ end
 
 handle.turtle = function(side, agressive)
 -- default wait a little while if still doesnt move break it
-	print('found a trutle')
+	print('found a turtle')
 	if not agressive then return false end
 	sleep(turtleWaitTime)
 	if detectTurtle(side) then
@@ -198,6 +214,7 @@ handle.gravel = function(side)
 end
 
 handle.block = function(side, agressive)
+
 	if not agressive then 
 		return false 
 	end
@@ -317,6 +334,7 @@ function forward(amount, agressive, tries, hijacked)
 			if i > 1 then
 				print ('useing a try')
 			end
+			if detectFull() then handle.full() end
 			if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
 			if detectTurtle('front') then handle.turtle('front', agressive) end
 			if detectAnimal('front') then handle.animal('front') end
@@ -356,6 +374,7 @@ function up(amount, agressive, tries, hijacked)
 	for i = 1, amount do
 		local moved = false
 		for i = 1, tries do
+			if detectFull() then handle.full() end
 			if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
 			if detectTurtle('top') then handle.turtle('top', agressive) end
 			if detectAnimal('top') then handle.animal('top') end
@@ -394,6 +413,7 @@ function down(amount, agressive, tries, hijacked)
 	for i = 1, amount do
 		local moved = false
 		for i = 1, tries do
+			if detectFull() then handle.full() end
 			if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
 			if detectTurtle('bottom') then handle.turtle('bottom', agressive) end
 			if detectAnimal('bottom') then handle.animal('bottom') end
@@ -434,6 +454,7 @@ function back(amount, agressive, tries, hijacked)
 	for i = 1, amount do
 		local moved = false
 		for i = 1, tries do
+			if detectFull() then handle.full() end
 			if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
 			
 			if turned then
@@ -494,5 +515,4 @@ function hijackTurtleAPI(restore)
         turtle.turnLeft  = function() return turnLeft() ~= false end
     end
 end
-
 
