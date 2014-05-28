@@ -82,13 +82,17 @@ function gpsUpdate(f)
 	--todo get direction facing by moving and checking gps again
 	x, y, z = gps.locate()
 	if x ~= nil then
-		location.x = x
-		location.y = y 
-		location.z = z
+		location.coord.x = x
+		location.coord.y = y 
+		location.coord.z = z
 	end
-	if tonumber(f) and f >= 0 and f <= 3 then location.direction = f end
-	for k, v in pairs(directions) do
-		if f == v then location.direction = tonumber(k) end
+	if tonumber(f) ~= nil then
+		f = tonumber(f)
+		if f >= 0 and f <= 3 then location.direction = f else print('bad f') end
+	else
+		for k, v in pairs(directions) do
+			if f == v then location.direction = tonumber(k) end
+		end
 	end
 	saveLocation()
 end

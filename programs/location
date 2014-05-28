@@ -34,13 +34,14 @@ if not pos then
 elseif arg[1] == 'set' and tonumber(arg[2]) and tonumber(arg[3]) and tonumber(arg[4]) and  tonumber(arg[5]) then
 	pos.setLocation(tonumber(arg[2]),tonumber(arg[3]),tonumber(arg[4]),tonumber(arg[5]) )
 elseif arg[1] == 'gps' and (tonumber(arg[2]) >= 0 or tonumber(arg[2]) <= 3 or arg[2] == 'north' or arg[2] == 'south' or arg[2] == 'east' or arg[2] == 'west' ) then
-	pos.gpsUpdate(arg[2])
-	x,y,z = gps.locate()
-	if loc == nil then
+		x,y,z = gps.locate()
+	if x == nil then
 		print('no gps signal')
 	else
-		print(loc)
+		print( x.." "..y ..' '.. z ..' '.. arg[2])
 	end
+	pos.gpsUpdate(arg[2])
+
 elseif  arg[1] == 'get' then
 	loc = pos.getPosition()
 	print('x: '..loc.coord.x..' y: '.. loc.coord.y..' z: '..loc.coord.z..' f: '..loc.direction )
