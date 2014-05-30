@@ -176,8 +176,8 @@ handle.fuel = function()
 			fueled = turtle.refuel(1)
 		end
 	end
-	if handle.fuelPause() then
-		handle.fuel()
+	if pos.handle.fuelPause() then
+		pos.handle.fuel()
 	end
 	turtle.select(currentSlot)
 end
@@ -224,11 +224,11 @@ handle.block = function(side, agressive)
 	end
 
 	if side == 'front' and turtle.detect() then
-		if not turtle.dig() then handle.unbreakable(); end
+		if not turtle.dig() then pos.handle.unbreakable(); end
 	elseif side == 'top' and turtle.detectUp() then
-		if not turtle.digUp() then handle.unbreakable(); end
+		if not turtle.digUp() then pos.handle.unbreakable(); end
 	elseif side == 'bottom' and turtle.detectDown() then
-		if not turtle.digDown() then handle.unbreakable(); end
+		if not turtle.digDown() then pos.handle.unbreakable(); end
 	end
 end
 
@@ -285,6 +285,7 @@ local handleDefaults = copy(handle)
 local turtleBackup = copy(turtle)
 
 function resetHandlers()
+	print('reseting handlers')
 	handle = copy(handleDefaults)
 end
 
@@ -338,15 +339,15 @@ function forward(amount, agressive, tries, hijacked)
 			if i > 1 then
 				print ('useing a try')
 			end
-			if detectFull() then handle.full() end
-			if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
-			if detectTurtle('front') then handle.turtle('front', agressive) end
-			if detectAnimal('front') then handle.animal('front') end
-			if detectBlock('front') then handle.block('front', agressive) end
+			if detectFull() then pos.handle.full() end
+			if turtle.getFuelLevel() <= baseFuelLevel then pos.handle.fuel() end
+			if detectTurtle('front') then pos.handle.turtle('front', agressive) end
+			if detectAnimal('front') then pos.handle.animal('front') end
+			if detectBlock('front') then pos.handle.block('front', agressive) end
 
 			moved = move('forward')
 			if not moved and agressive then 
-				handle.gravel('front')  
+				pos.handle.gravel('front')  
 				moved = move('forward')
 			end
 			if not moved then
@@ -378,14 +379,14 @@ function up(amount, agressive, tries, hijacked)
 	for i = 1, amount do
 		local moved = false
 		for i = 1, tries do
-			if detectFull() then handle.full() end
-			if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
-			if detectTurtle('top') then handle.turtle('top', agressive) end
-			if detectAnimal('top') then handle.animal('top') end
-			if detectBlock('top') then handle.block('top', agressive) end
+			if detectFull() then pos.handle.full() end
+			if turtle.getFuelLevel() <= baseFuelLevel then pos.handle.fuel() end
+			if detectTurtle('top') then pos.handle.turtle('top', agressive) end
+			if detectAnimal('top') then pos.handle.animal('top') end
+			if detectBlock('top') then pos.handle.block('top', agressive) end
 			moved = move('up')
 			if not moved and agressive then 
-				handle.gravel('top')  
+				pos.handle.gravel('top')  
 				moved = move('up')
 			end
 			if not moved then
@@ -417,14 +418,14 @@ function down(amount, agressive, tries, hijacked)
 	for i = 1, amount do
 		local moved = false
 		for i = 1, tries do
-			if detectFull() then handle.full() end
-			if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
-			if detectTurtle('bottom') then handle.turtle('bottom', agressive) end
-			if detectAnimal('bottom') then handle.animal('bottom') end
-			if detectBlock('bottom') then handle.block('bottom', agressive) end
+			if detectFull() then pos.handle.full() end
+			if turtle.getFuelLevel() <= baseFuelLevel then pos.handle.fuel() end
+			if detectTurtle('bottom') then pos.handle.turtle('bottom', agressive) end
+			if detectAnimal('bottom') then pos.handle.animal('bottom') end
+			if detectBlock('bottom') then pos.handle.block('bottom', agressive) end
 			moved = move('down')
 			if not moved and agressive then 
-				handle.gravel('bottom')  
+				pos.handle.gravel('bottom')  
 				moved = move('down')
 			end
 			if not moved then
@@ -458,8 +459,8 @@ function back(amount, agressive, tries, hijacked)
 	for i = 1, amount do
 		local moved = false
 		for i = 1, tries do
-			if detectFull() then handle.full() end
-			if turtle.getFuelLevel() <= baseFuelLevel then handle.fuel() end
+			if detectFull() then pos.handle.full() end
+			if turtle.getFuelLevel() <= baseFuelLevel then pos.handle.fuel() end
 			
 			if turned then
 				moved = forward(1,agressive,1,hijacked)
@@ -519,4 +520,3 @@ function hijackTurtleAPI(restore)
         turtle.turnLeft  = function() return turnLeft() ~= false end
     end
 end
-
