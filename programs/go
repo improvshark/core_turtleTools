@@ -1,0 +1,47 @@
+
+function amount(index)
+	-- check if there is another index
+	if arg[index+1] == nill then return 1 end
+
+	nextArg = arg[index+1]
+
+	if tonumber(nextArg) ~= nil then
+		table.remove(arg, index+1)
+ 		return tonumber(nextArg)
+	else
+  		return 1
+	end
+end
+
+function checkForApi()
+  if not pos then
+    error( " pos API  not loaded on computer" )
+    return false
+  else
+    return true
+  end
+end
+
+arg = {...}
+
+if not checkForApi() then return end
+
+for i = 1, #arg do
+	if arg[i] == nil then break end
+	move = arg[i]
+
+	if move == "f" or move == "fd"  or move == "forward"  then
+		pos.forward(amount(i), false)
+	elseif move == "u" or move == "up"  then
+		pos.up(amount(i), false)
+	elseif move == "d" or move == "dn"  or move == "down"  then
+		pos.down(amount(i), false)
+	elseif move == "b" or move == 'bk'  or move == "back"  then
+		pos.back(amount(i), false)
+	elseif move == "r" or move == "rt" or move == "rightTurn"  then
+		pos.turnRight(amount(i))
+	elseif move == "l" or move == "lt" or move == "leftTurn"  then
+		pos.turnLeft(amount(i))
+	end
+
+end
