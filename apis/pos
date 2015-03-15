@@ -39,10 +39,10 @@ function getPosition() -- returns a copy of location
 end
 
 function getCoord() return vector.new(location.coord.x,location.coord.y,location.coord.z) end
-function getX() return direction.coord.x end
-function getY() return direction.coord.y end
-function getZ() return direction.coord.z end
-function getDirection() return direction.direction end
+function getX() return location.coord.x end
+function getY() return location.coord.y end
+function getZ() return location.coord.z end
+function getDirection() return location.direction end
 function getDirectionString()
 	return directions[location.direction]
 end
@@ -64,7 +64,7 @@ local function loadLocation()
 	location.coord.z = tonumber(temp.coord.z)
 	location.direction = tonumber(temp.direction)
 
-	
+
 end
 loadLocation()
 
@@ -83,7 +83,7 @@ function gpsUpdate(f)
 	x, y, z = gps.locate()
 	if x ~= nil then
 		location.coord.x = x
-		location.coord.y = y 
+		location.coord.y = y
 		location.coord.z = z
 	end
 	if tonumber(f) ~= nil then
@@ -139,8 +139,8 @@ end
 -- table of functions on how to deal with stuff
 handle ={}
 
-handle.fuelPause =  function() 
-  
+handle.fuelPause =  function()
+
   print ("no Fuel left!")
   print ("a. continue")
   print ("b. exit")
@@ -170,7 +170,7 @@ handle.fuel = function()
 	fueled = false
 	currentSlot = turtle.getSelectedSlot()
 	for i = 1, 16 do
-		
+
 		if turtle.getItemCount(i) > 0 then
 			turtle.select(i)
 			fueled = turtle.refuel(1)
@@ -205,22 +205,22 @@ end
 
 handle.gravel = function(side)
 	print('handle gravel')
-	
-	if side == 'front' then  
+
+	if side == 'front' then
 		while turtle.detect() do turtle.dig() end
-	elseif side == 'top' then 
+	elseif side == 'top' then
 		while turtle.detectUp() do turtle.digUp() end
-	elseif side == 'bottom' then 
-		while turtle.detectDown() do turtle.digDown() end 
+	elseif side == 'bottom' then
+		while turtle.detectDown() do turtle.digDown() end
 	end
 		sleep(gravelWaitTime)
-	
+
 end
 
 handle.block = function(side, agressive)
 
-	if not agressive then 
-		return false 
+	if not agressive then
+		return false
 	end
 
 	if side == 'front' and turtle.detect() then
@@ -235,13 +235,13 @@ end
 local function move(direction)
 	fuel = turtle.getFuelLevel()
 	if direction == 'forward' then orig_turtle.forward()
-	elseif direction == 'up' then orig_turtle.up() 
-	elseif direction == 'down' then orig_turtle.down() 
+	elseif direction == 'up' then orig_turtle.up()
+	elseif direction == 'down' then orig_turtle.down()
 	elseif direction == 'back' then orig_turtle.back() end
 	moved =  (turtle.getFuelLevel() == fuel -1)
 	if moved == true then
 
-		if direction == 'forward' then 
+		if direction == 'forward' then
 			if location.direction == 0 then
 				location.coord.z = location.coord.z + 1
 			elseif location.direction == 1 then
@@ -261,10 +261,10 @@ local function move(direction)
 			elseif location.direction == 3 then
 				location.coord.x = location.coord.x - 1
 			end
-		elseif direction == 'up' then 
-			location.coord.y = location.coord.y + 1 
-		elseif direction == 'down' then 
-			location.coord.y = location.coord.y - 1 
+		elseif direction == 'up' then
+			location.coord.y = location.coord.y + 1
+		elseif direction == 'down' then
+			location.coord.y = location.coord.y - 1
 		end
 
 		saveLocation()
@@ -295,12 +295,12 @@ function turnRight(amount)
 	if amount == nil then amount = 1 end
 	for i = 1, amount do
 		if orig_turtle.turnRight() then
-			if location.direction < 3 then 
-				location.direction = location.direction + 1 
+			if location.direction < 3 then
+				location.direction = location.direction + 1
 			elseif location.direction >= 3 then
 				location.direction = 0
 			end
-			saveLocation() 
+			saveLocation()
 		end
 	end
 	return true
@@ -309,13 +309,13 @@ end
 function turnLeft(amount)
 	if amount == nil then amount = 1 end
 	for i = 1, amount do
-		if orig_turtle.turnLeft() then 
-			if location.direction <= 0 then 
+		if orig_turtle.turnLeft() then
+			if location.direction <= 0 then
 				location.direction = 3
 			elseif location.direction > 0 then
-				location.direction = location.direction - 1 
+				location.direction = location.direction - 1
 			end
-			saveLocation() 
+			saveLocation()
 		end
 	end
 	return true
@@ -327,10 +327,10 @@ function forward(amount, agressive, tries, hijacked)
 	if tries == nil then tries = triesDefault end
 	if hijacked == nil then hijacked = false end
 
-	if hijacked then 
-		amount = 1 
+	if hijacked then
+		amount = 1
 		agressive = false
-		tries = 0 
+		tries = 0
 	end
 	local movements = 0
 	for i = 1, amount do
@@ -346,14 +346,14 @@ function forward(amount, agressive, tries, hijacked)
 			if detectBlock('front') then pos.handle.block('front', agressive) end
 
 			moved = move('forward')
-			if not moved and agressive then 
-				pos.handle.gravel('front')  
+			if not moved and agressive then
+				pos.handle.gravel('front')
 				moved = move('forward')
 			end
 			if not moved then
 				print('failed to move')
 			else
-				movements = movements +1 
+				movements = movements +1
 				break
 			end
 		end
@@ -370,10 +370,10 @@ function up(amount, agressive, tries, hijacked)
 	if tries == nil then tries = triesDefault end
 	if hijacked == nil then hijacked = false end
 
-	if hijacked then 
-		amount = 1 
+	if hijacked then
+		amount = 1
 		agressive = false
-		tries = 0 
+		tries = 0
 	end
 	local movements = 0
 	for i = 1, amount do
@@ -385,14 +385,14 @@ function up(amount, agressive, tries, hijacked)
 			if detectAnimal('top') then pos.handle.animal('top') end
 			if detectBlock('top') then pos.handle.block('top', agressive) end
 			moved = move('up')
-			if not moved and agressive then 
-				pos.handle.gravel('top')  
+			if not moved and agressive then
+				pos.handle.gravel('top')
 				moved = move('up')
 			end
 			if not moved then
 				print('failed to move')
 			else
-				movements = movements +1 
+				movements = movements +1
 				break
 			end
 		end
@@ -409,10 +409,10 @@ function down(amount, agressive, tries, hijacked)
 	if tries == nil then tries = triesDefault end
 	if hijacked == nil then hijacked = false end
 
-	if hijacked then 
-		amount = 1 
+	if hijacked then
+		amount = 1
 		agressive = false
-		tries = 0 
+		tries = 0
 	end
 	local movements = 0
 	for i = 1, amount do
@@ -424,14 +424,14 @@ function down(amount, agressive, tries, hijacked)
 			if detectAnimal('bottom') then pos.handle.animal('bottom') end
 			if detectBlock('bottom') then pos.handle.block('bottom', agressive) end
 			moved = move('down')
-			if not moved and agressive then 
-				pos.handle.gravel('bottom')  
+			if not moved and agressive then
+				pos.handle.gravel('bottom')
 				moved = move('down')
 			end
 			if not moved then
 				print('failed to move')
 			else
-				movements = movements +1 
+				movements = movements +1
 				break
 			end
 		end
@@ -449,10 +449,10 @@ function back(amount, agressive, tries, hijacked)
 	if tries == nil then tries = triesDefault end
 	if hijacked == nil then hijacked = false end
 
-	if hijacked then 
-		amount = 1 
-		agressive = false 
-		tries = 0 
+	if hijacked then
+		amount = 1
+		agressive = false
+		tries = 0
 	end
 	local movements = 0
 	turned = false
@@ -461,12 +461,12 @@ function back(amount, agressive, tries, hijacked)
 		for i = 1, tries do
 			if detectFull() then pos.handle.full() end
 			if turtle.getFuelLevel() <= baseFuelLevel then pos.handle.fuel() end
-			
+
 			if turned then
 				moved = forward(1,agressive,1,hijacked)
 			else
 				moved = move('back')
-				if not moved then 
+				if not moved then
 					turnRight(2)
 					turned = true
 					moved = forward(1,agressive,1,hijacked)
@@ -475,7 +475,7 @@ function back(amount, agressive, tries, hijacked)
 			if not moved then
 				print('failed to move')
 			else
-				movements = movements +1 
+				movements = movements +1
 				break
 			end
 		end
