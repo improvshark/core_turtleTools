@@ -142,8 +142,7 @@ handle ={}
 handle.fuelPause =  function()
 
   print ("no Fuel left!")
-  print ("a. continue")
-  print ("b. exit")
+  print ("continue y/n")
 
   do
     input = io.read()
@@ -206,12 +205,19 @@ end
 handle.gravel = function(side)
 	print('handle gravel')
 
+
 	if side == 'front' then
-		while turtle.detect() do turtle.dig() end
+		while turtle.detect() do
+ 			if not turtle.dig() return false end
+		end
 	elseif side == 'top' then
-		while turtle.detectUp() do turtle.digUp() end
+		while turtle.detectUp() do
+			if not turtle.digUp() return false end
+		end
 	elseif side == 'bottom' then
-		while turtle.detectDown() do turtle.digDown() end
+		while turtle.detectDown() do
+			if not turtle.digDown() return false end
+ 		end
 	end
 		sleep(gravelWaitTime)
 
