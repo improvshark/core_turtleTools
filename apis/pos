@@ -353,6 +353,7 @@ function forward(amount, agressive, tries, hijacked)
 
 			moved = move('forward')
 			if not moved and agressive then
+				if detectTurtle('front') then pos.handle.turtle('front', agressive) end
 				pos.handle.gravel('front')
 				moved = move('forward')
 			end
@@ -392,6 +393,7 @@ function up(amount, agressive, tries, hijacked)
 			if detectBlock('top') then pos.handle.block('top', agressive) end
 			moved = move('up')
 			if not moved and agressive then
+				if detectTurtle('top') then pos.handle.turtle('top', agressive) end
 				pos.handle.gravel('top')
 				moved = move('up')
 			end
@@ -431,6 +433,7 @@ function down(amount, agressive, tries, hijacked)
 			if detectBlock('bottom') then pos.handle.block('bottom', agressive) end
 			moved = move('down')
 			if not moved and agressive then
+				if detectTurtle('bottom') then pos.handle.turtle('bottom', agressive) end
 				pos.handle.gravel('bottom')
 				moved = move('down')
 			end
