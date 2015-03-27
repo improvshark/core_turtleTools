@@ -504,8 +504,8 @@ function back(amount, agressive, tries, hijacked)
 end
 
 local function isIgnore(block)
-	for i=1, #ignore do
-		if block == ignore[i] then return true end
+	for i=1, #pos.ignore do
+		if block == pos.ignore[i] then return true end
 	end
 	return false
 end
