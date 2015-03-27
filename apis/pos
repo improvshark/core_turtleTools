@@ -208,15 +208,15 @@ handle.gravel = function(side)
 
 	if side == 'front' then
 		while turtle.detect() do
- 			if not turtle.dig() return false end
+ 			if not turtle.dig() then return false end
 		end
 	elseif side == 'top' then
 		while turtle.detectUp() do
-			if not turtle.digUp() return false end
+			if not turtle.digUp() then return false end
 		end
 	elseif side == 'bottom' then
 		while turtle.detectDown() do
-			if not turtle.digDown() return false end
+			if not turtle.digDown() then return false end
  		end
 	end
 		sleep(gravelWaitTime)
