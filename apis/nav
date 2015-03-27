@@ -26,43 +26,57 @@ function turn(f)
 	end
 end
 
-function gotoX(x, agressive)
-	currentX = pos.getPosition().coord.x
+function moveTowardsX(x, agressive)
+	currentX = pos.getX()
 	if x > currentX then
 		turn(3)
-		pos.forward(x - currentX, agressive)
 	elseif x < currentX then
 		turn(1)
-		pos.forward(currentX-x, agressive)
+	end
+	return pos.forward(1,agressive)
+end
+
+function moveTowardsZ(z, agressive)
+		currentZ = pos.getZ()
+		if z > currentZ then
+			turn(0)
+		elseif z < currentZ then
+			turn(2)
+		end
+		return pos.forward(1, agressive)
+end
+
+function moveTowardsY(y, agressive)
+		currentY = pos.getY()
+		if y > currentY then
+			return pos.up(1, agressive)
+		elseif y < currentY then
+			return pos.down(1, agressive)
+		end
+end
+
+function gotoX(x, agressive)
+	while pos.getX() ~= x do
+		moveTowardsX(x,agressive)
 	end
 end
 
 function gotoY(y, agressive)
-	currentY = pos.getPosition().coord.y
-	if y > currentY then
-		pos.up(y - currentY, agressive)
-	elseif y < currentY then
-		turn(1)
-		pos.down(currentY-y, agressive)
+	while pos.getY() ~= y do
+		moveTowardsY(y,agressive)
 	end
 end
 
 function gotoZ(z, agressive)
-	currentZ = pos.getPosition().coord.z
-	if z > currentZ then
-		turn(0)
-		pos.forward(z - currentZ, agressive)
-	elseif z < currentZ then
-		turn(2)
-		pos.forward(currentZ-z, agressive)
+	while pos.getZ() ~= z do
+		moveTowardsZ(z,agressive)
 	end
 end
 
+
 function gotoPos(obj, agressive)
-	currentPos = pos.getPosition()
 	gotoX(obj.coord.x, agressive)
-	gotoY(obj.coord.y, agressive)
 	gotoZ(obj.coord.z, agressive)
+	gotoY(obj.coord.y, agressive)
 	turn(obj.direction)
 end
-
