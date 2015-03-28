@@ -14,8 +14,10 @@ function checkFuel(amount, moveBack)
 		level = amount * 2
 	end
 
-	if turtle.getFuelLevel() < level then
+	if tonumber(turtle.getFuelLevel()) and turtle.getFuelLevel() < level then
 		return false
+	elseif not tonumber(turtle.getFuelLevel()) then
+		return true
 	end
 	return true
 end

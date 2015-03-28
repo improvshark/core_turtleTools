@@ -14,7 +14,7 @@ function findFiller() -- returns the slot filler is at
 end
 
 function checkFuel()
-	if turtle.getFuelLevel() < 60 then
+	if tonumber(turtle.getFuelLevel()) and turtle.getFuelLevel() < 60 then
 		slot = turtle.getSelectedSlot()
 		turtle.select(fuelSlot)
 		turtle.refuel(1)

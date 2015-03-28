@@ -55,19 +55,19 @@ end
 
 function	excavate(dim)
 	if dim.y <= 0 then return end
-	
+
 	curPos = pos.getPosition()
 	completed = startPos.coord.y - curPos.coord.y
 	layersLeft = dim.y - completed
 	setResume(curPos, dim)
-	
+
 	rightTurn = true
-	
+
 	--if 3 move down 1
 	if dim.y >= 3 then
 		pos.down(1,true)
 	end
-	
+
 	for i=1, dim.x do
 		digLine(dim.z,dim.y)
 		if rightTurn and i ~= dim.x then
@@ -82,7 +82,7 @@ function	excavate(dim)
 			rightTurn = true
 		end
 	end
-	
+
 	if dim.y >= 3 then
 		dim.y = dim.y - 3
 		if dim.y > 0 then
@@ -93,7 +93,7 @@ function	excavate(dim)
 	elseif dim.y == 1 then
 		dim.y = dim.y -1
 	end
-	
+
 	if dim.x % 2 == 0 then
 		pos.turnRight()
 		excavate( vector.new(dim.z,dim.y,dim.x) )-- swaped x and z
@@ -105,7 +105,9 @@ end
 
 function enoughFuel(dim)
 	fuelLevel = turtle.getFuelLevel()
-	if fuelLevel >= (dim.x*dim.y*dim.z) + fuelBuffer then
+	if tonumber(fuelLevel) and fuelLevel >= (dim.x*dim.y*dim.z) + fuelBuffer then
+		return true
+	elseif not tonumber(fuelLevel) then
 		return true
 	end
 	return false
@@ -127,9 +129,9 @@ startPos = pos.getPosition()
 
 
 dimensions = vector.new( tonumber(arg[1]), tonumber(arg[2]), tonumber(arg[3]))
-	
+
 if tonumber(arg[1]) ~= nil and tonumber(arg[2]) ~= nil and tonumber(arg[3]) ~= nil then
-	
+
 	if not enoughFuel(dimensions) then
 		print('Not enough Fuel to complete task.')
 		print('Give me more fuel and I might do the job')
