@@ -159,6 +159,18 @@ local function detectIgnore(side)
 	if detected and isIgnore(block.name) then return true else return false end
 end
 
+function dig()
+	if not detectIgnore("front") then return orig_turtle.dig() end
+end
+
+function digDown()
+	if not detectIgnore("bottom") then return orig_turtle.digDown() end
+end
+
+function digUp()
+	if not detectIgnore("top") then return orig_turtle.digUp() end
+end
+
 -- table of functions on how to deal with stuff
 handle ={}
 
@@ -235,19 +247,21 @@ handle.gravel = function(side)
 
 	if side == 'front' then
 		while turtle.detect() do
- 			if not pos.dig() then return false else return true end
+ 			if not pos.dig() then return false end
+			sleep(gravelWaitTime)
 		end
 	elseif side == 'top' then
 		while turtle.detectUp() do
-			if not pos.digUp() then return false else return true end
+			if not pos.digUp() then return false  end
+			sleep(gravelWaitTime)
 		end
 	elseif side == 'bottom' then
 		while turtle.detectDown() do
-			if not pos.digDown() then return false else return true end
+			if not pos.digDown() then return false end
+			sleep(gravelWaitTime)
  		end
 	end
-		sleep(gravelWaitTime)
-
+	return true
 end
 
 handle.block = function(side, agressive)
@@ -330,21 +344,6 @@ function resetHandlers()
 	handle = copy(handleDefaults)
 end
 
-function dig()
-	detected, block = turtle.inspect()
-	if detected and not isIgnore(block.name) then return orig_turtle.dig() end
-end
-
-function digDown()
-	detected, block = turtle.inspect()
-	if detected and not isIgnore(block.name) then return orig_turtle.digDown() end
-end
-
-function digUp()
-	detected, block = turtle.inspect()
-	if detected and not isIgnore(block.name) then return orig_turtle.digUp() end
-end
-
 function turnRight(amount)
 	if amount == nil then amount = 1 end
 	for i = 1, amount do
@@ -401,9 +400,9 @@ function forward(amount, agressive, tries, hijacked)
 
 			moved = move('forward')
 			if not moved and agressive then
-				if detectTurtle('front') then pos.handle.turtle('front', agressive) end
-				if detectIgnore('front') then pos.handle.ignore('front', agressive) end
-				pos.handle.gravel('front')
+				if detectTurtle('front') then pos.handle.turtle('front', agressive)
+				elseif detectIgnore('front') then pos.handle.ignore('front', agressive)
+				else pos.handle.gravel('front') end
 				moved = move('forward')
 			end
 			if not moved then
@@ -442,9 +441,9 @@ function up(amount, agressive, tries, hijacked)
 			if detectBlock('top') then pos.handle.block('top', agressive) end
 			moved = move('up')
 			if not moved and agressive then
-				if detectTurtle('top') then pos.handle.turtle('top', agressive) end
-				if detectIgnore('top') then pos.handle.ignore('top', agressive) end
-				pos.handle.gravel('top')
+				if detectTurtle('top') then pos.handle.turtle('top', agressive)
+				elseif detectIgnore('top') then pos.handle.ignore('top', agressive)
+				else pos.handle.gravel('top') end
 				moved = move('up')
 			end
 			if not moved then
@@ -483,9 +482,9 @@ function down(amount, agressive, tries, hijacked)
 			if detectBlock('bottom') then pos.handle.block('bottom', agressive) end
 			moved = move('down')
 			if not moved and agressive then
-				if detectTurtle('bottom') then pos.handle.turtle('bottom', agressive) end
-				if detectIgnore('bottom') then pos.handle.ignore('bottom', agressive) end
-				pos.handle.gravel('bottom')
+				if detectTurtle('bottom') then pos.handle.turtle('bottom', agressive)
+				elseif detectIgnore('bottom') then pos.handle.ignore('bottom', agressive)
+				else pos.handle.gravel('bottom') end
 				moved = move('down')
 			end
 			if not moved then
