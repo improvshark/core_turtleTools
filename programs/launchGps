@@ -1,0 +1,154 @@
+local function checkInvintory(block, amount)
+for i=1, 16 do
+  info = turtle.getItemDetail(i)
+  if info ~= nil and info.name == block and info.count == amount then return true, i end
+end
+return false
+end
+
+local function getComputer()
+  computerthere, slot = checkInvintory("ComputerCraft:CC-Computer", 4)
+  if computerthere then return slot else return nil end
+end
+
+local function getModems()
+  modemThere, slot = checkInvintory("ComputerCraft:CC-Peripheral", 4)
+  if modemThere then return slot else return nil end
+end
+
+local function getDrive()
+  driveThere, slot = checkInvintory("ComputerCraft:CC-Peripheral", 1)
+  if driveThere then return slot else return nil end
+end
+
+local function getDisk()
+  diskThere, diskSlot = checkInvintory("ComputerCraft:disk", 1)
+  disk2There, disk2Slot = checkInvintory("ComputerCraft:diskExpanded", 1)
+  if diskThere then return diskSlot
+  elseif disk2There then return disk2Slot
+  else return nil end
+end
+
+
+local function deployComputer()
+  turtle.select(computerSlot)
+  turtle.place()
+  pos.down(2,true)
+  pos.forward(1,true)
+  turtle.select(modemSlot)
+  turtle.placeUp()
+  pos.back(2,true)
+  pos.up(2,true)
+end
+
+local function programDisk(x, y, z)
+
+  gpsStartup = "print(\"hosting gps\") shell.run(\"gps host "..x.. " "..y.." "..z.." \")"
+  file = fs.open("/disk/gpsStartup", "w")
+  file.write(gpsStartup)
+  file.close()
+
+  diskInstall =" if fs.exists(\"/startup\") then fs.delete(\"/startup\") end fs.copy(\"/disk/gpsStartup\",\"/startup\") sleep(5) os.reboot() "
+  file = fs.open("/disk/startup", "w")
+  file.write(diskInstall)
+  file.close()
+
+end
+
+local function programComputer(x,y,z)
+  turtle.select(driveSlot)
+  turtle.place()
+  turtle.select(diskSlot)
+  turtle.drop()
+  programDisk(x,y,z)
+  pos.up(1,true)
+  pos.forward(2,true)
+  peripheral.call("bottom","turnOn")
+  pos.back(2,true)
+  pos.down(1,true)
+  sleep(5)
+  turtle.suck()
+  turtle.select(driveSlot)
+  turtle.dig()
+end
+
+
+
+-- start point
+local arg = {...}
+
+computerSlot = getComputer()
+modemSlot = getModems()
+driveSlot = getDrive()
+diskSlot = getDisk()
+
+print(computerSlot)
+print(modemSlot)
+print(driveSlot)
+print(diskSlot)
+
+if arg[1] == "prog" then
+programDisk(1,2,3)
+elseif tonumber(arg[1]) ~= nil and computerSlot and modemSlot and driveSlot and diskSlot then
+  height = tonumber(arg[1])
+
+  if tonumber(turtle.getFuelLevel()) ~= nil or turtle.getFuelLevel() < height* 2 + 70 then print("error: not enough fuel") return false end
+
+
+
+  print( "height: ".. height)
+  startPos = pos.getPosition()
+-- setting up my coordnates
+  mainPos = pos.getPosition()
+  mainPos.coord.y = height
+
+  gps1 = pos.getPosition()
+  gps1.direction = 0
+  gps1.coord.y = height
+  gps1.coord.z = gps1.coord.z + 3
+
+  gps2 = pos.getPosition()
+  gps2.direction = 2
+  gps2.coord.y = height
+  gps2.coord.z = gps2.coord.z - 3
+
+  gps3 = pos.getPosition()
+  gps3.direction = 3
+  gps3.coord.y = height -3
+  gps3.coord.x = gps3.coord.x + 3
+
+  gps4 = pos.getPosition()
+  gps4.direction = 1
+  gps4.coord.y = height -3
+  gps4.coord.x = gps4.coord.x - 3
+
+  -- the program
+  nav.gotoPos(mainPos, true)
+
+  nav.gotoPos(gps1, true)
+  deployComputer()
+  programComputer(gps1.coord.x, gps1.coord.y, gps1.coord.z +1)
+
+  nav.gotoPos(gps2, true)
+  deployComputer()
+  programComputer(gps2.coord.x, gps2.coord.y, gps2.coord.z -1)
+
+  nav.gotoPos(mainPos, true)
+
+  nav.gotoPos(gps3, true)
+  deployComputer()
+  programComputer(gps3.coord.x +1, gps3.coord.y, gps3.coord.z)
+
+  nav.gotoPos(gps4, true)
+  deployComputer()
+  programComputer(gps4.coord.x -1, gps4.coord.y, gps4.coord.z)
+  nav.gotoPos(mainPos, true)
+
+  nav.gotoPos(startPos, true)
+
+elseif arg[1] == nil then
+  print("launchGps <height>")
+  print(" --also make sure you set the location of the turtle via: location")
+else
+  print("missing stuff!")
+end
