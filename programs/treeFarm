@@ -1,0 +1,55 @@
+
+saplings = {"BiomesOPlenty:saplings"}
+logs = {"minecraft:log"}
+
+saplingSlot = 1
+fertilizerSlot = 2
+
+sleepTime = 1
+
+local function isSapling()
+  for i=1, #saplings do
+    inspect, data = turtle.inspect()
+    if inspect and data.name == saplings[i] then return true end
+  end
+  return false
+end
+
+local function isLog()
+  for i=1, #logs do
+    inspect, data = turtle.inspect()
+    if inspect and data.name == logs[i] then return true end
+  end
+  return false
+end
+
+local function plant()
+  print("planting")
+  turtle.select(saplingSlot)
+  turtle.place()
+end
+
+local function fertilize()
+  print("fertilize")
+  turtle.select(fertilizerSlot)
+  turtle.place()
+end
+
+
+while true do
+
+  if not turtle.detect() then
+    plant()
+  elseif isSapling() then
+    fertilize()
+  elseif isLog() then
+    print("logging")
+    shell.run("log")
+    turtle.back()
+    plant()
+    fertilize()
+  end
+
+  print("wait")
+  sleep(sleepTime)
+end
