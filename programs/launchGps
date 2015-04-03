@@ -92,7 +92,7 @@ programDisk(1,2,3)
 elseif tonumber(arg[1]) ~= nil and computerSlot and modemSlot and driveSlot and diskSlot then
   height = tonumber(arg[1])
 
-  if tonumber(turtle.getFuelLevel()) ~= nil or turtle.getFuelLevel() < height* 2 + 70 then print("error: not enough fuel") return false end
+  if turtle.getFuelLevel() < height* 2 + 70 then print("error: not enough fuel") return false end
 
 
 
