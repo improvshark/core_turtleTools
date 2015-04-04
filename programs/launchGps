@@ -43,7 +43,7 @@ end
 
 local function programDisk(x, y, z)
 
-  gpsStartup = "print(\"hosting gps\") shell.run(\"gps host "..x.. " "..y.." "..z.." \")"
+  gpsStartup = "f1 = function() shell.run(\"gps host "..x.. " "..y.." "..z.." \") end f2 = function() shell.run(\"repeat\") end parallel.waitForAll(f1,f2)"
   file = fs.open("/disk/gpsStartup", "w")
   file.write(gpsStartup)
   file.close()
@@ -92,7 +92,7 @@ programDisk(1,2,3)
 elseif tonumber(arg[1]) ~= nil and computerSlot and modemSlot and driveSlot and diskSlot then
   height = tonumber(arg[1])
 
-  if tonumber(turtle.getFuelLevel()) ~= nil or turtle.getFuelLevel() < height* 2 + 70 then print("error: not enough fuel") return false end
+  if turtle.getFuelLevel() < height* 2 + 70 then print("error: not enough fuel") return false end
 
 
 
