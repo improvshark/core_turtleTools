@@ -48,7 +48,7 @@ local function programDisk(x, y, z)
   file.write(gpsStartup)
   file.close()
 
-  diskInstall =" if fs.exists(\"/startup\") then fs.delete(\"/startup\") end fs.copy(\"/disk/gpsStartup\",\"/startup\") sleep(5) os.reboot() "
+  diskInstall =" os.setComputerLabel(\"gps\") if fs.exists(\"/startup\") then fs.delete(\"/startup\") end fs.copy(\"/disk/gpsStartup\",\"/startup\") sleep(5) os.reboot() "
   file = fs.open("/disk/startup", "w")
   file.write(diskInstall)
   file.close()
