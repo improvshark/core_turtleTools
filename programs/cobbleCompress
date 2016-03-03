@@ -1,0 +1,173 @@
+--pastebin get gTvmKcBU cobble
+
+validCobble = { 'ExtraUtilities:cobblestone_compressed', 'minecraft:cobblestone' };
+
+
+-- find chest
+-- get from chest until we get something that doesnt match
+-- take count
+-- balance and spreaa
+-- craft
+
+chestBlock = 'minecraft:chest'
+slots = {1,2,3,5,6,7,9,10,11}
+
+function printTable(mytable)
+	for i=1,#mytable do
+			print ( i .. " " .. mytable[i])
+	end
+end
+
+function getChest()
+		chest = {}
+		up, upObj = turtle.inspectUp()
+		down, downObj = turtle.inspectDown()
+		front, frontObj = turtle.inspect()
+		if ( up and upObj.name == chestBlock) then
+			chest.suck = turtle.suckUp
+			chest.drop = turtle.dropUp
+			chest.throwAway = turtle.drop
+		elseif (down and downObj.name == chestBlock ) then
+			chest.suck = turtle.suckDown
+			chest.drop = turtle.dropDown
+			chest.throwAway = turtle.drop
+		elseif (front and frontObj.name == chestBlock) then
+			chest.suck = turtle.suck
+			chest.drop = turtle.drop
+			chest.throwAway = turtle.dropDown
+		else
+			return false
+		end
+
+		return chest
+end
+
+-- thow it away if its not cobble
+function tossIfBad(chest)
+	valid = false;
+  for i=1,#validCobble do
+      if (turtle.getItemCount(slot) > 0 and turtle.getItemDetail(slot).name == validCobble[i]) then
+        valid = true
+      end
+  end
+	if ( valid == false) then
+		chest.throwAway()
+	  --print('tossing bad')
+	end
+end
+
+function getStuff(chest)
+		for i=1,#slots do
+			turtle.select(slots[i])
+			while (turtle.getItemCount(slots[i]) == 0 )	do
+				chest.suck()
+				tossIfBad(chest)
+			end
+			if (turtle.compareTo(1) == false) then
+				--print ("dropping poop")
+				chest.drop()
+				return
+			elseif (turtle.getItemSpace(slots[i]) ~= 0 ) then
+				return
+			end
+		end
+end
+
+function takeInventory()
+	holding = { needMore = {}, needLess = {}, total = 0, target = 0 }
+	-- get total
+	for i=1,#slots do
+		holding.total = holding.total + turtle.getItemCount(slots[i])
+	end
+	holding.target = math.floor(holding.total/9)
+	for i=1,#slots do
+		if ( turtle.getItemCount(slots[i]) > holding.target)	then
+			table.insert (holding.needLess, slots[i])
+		elseif (turtle.getItemCount(slots[i]) < holding.target) then
+			table.insert (holding.needMore, slots[i])
+		end
+	end
+	return holding
+end
+
+function balance(holding)
+	--print ("total " .. holding.total)
+	--print ("target " .. holding.target)
+	--printTable(holding.needMore )
+		-- loop through needMore  and add more.
+		hasExtra = table.remove(holding.needLess)
+		for i=1,#holding.needMore do
+			turtle.select(hasExtra)
+			while (turtle.getItemCount(holding.needMore[i]) ~= holding.target ) do
+				need = holding.target - turtle.getItemCount(holding.needMore[i])
+				extra = turtle.getItemCount(hasExtra) - holding.target
+				if (extra >= need) then
+					turtle.transferTo(holding.needMore[i],need)
+				elseif (extra < need ) then
+					turtle.transferTo(holding.needMore[i],extra)
+					hasExtra = table.remove(holding.needLess)
+					turtle.select(hasExtra)
+				end
+			end
+		end
+end
+
+function dropAll(chest)
+	for i=1,#slots do
+		if (turtle.getItemCount(slots[i]) > 0) then
+			turtle.select(slots[i])
+			chest.drop()
+		end
+	end
+end
+
+
+
+function isEmpty()
+	for i=1,16 do
+		if (turtle.getItemCount(i) > 0) then
+			return false
+		end
+	end
+	return true
+end
+
+function dropAllSorted(chest)
+	notdone = true
+	while isEmpty() == false do
+		largest = 1
+		for i=1,16 do
+			if (turtle.getItemCount(i) > turtle.getItemCount(largest)) then
+				largest = i
+			end
+		end
+		turtle.select(largest)
+		chest.drop()
+	end
+end
+
+chest = getChest()
+
+if( chest ~= false) then
+
+	dropAll(chest)
+	while true do
+
+		getStuff(chest)
+		holding = takeInventory()
+		if (holding.total >= 9) then
+			balance(holding)
+			turtle.craft()
+			dropAll(chest)
+		else
+			-- fill the rest of the slots
+			for i=2, 16 do
+				turtle.select(slots[i])
+				if (chest.suck() == false ) then
+					break;
+				end
+			end
+			dropAllSorted(chest)
+		end
+	end
+end
