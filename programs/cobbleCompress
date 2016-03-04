@@ -162,7 +162,7 @@ if( chest ~= false) then
 		else
 			-- fill the rest of the slots
 			for i=2, 16 do
-				turtle.select(slots[i])
+				turtle.select(i)
 				if (chest.suck() == false ) then
 					break;
 				end
