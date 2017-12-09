@@ -1,4 +1,3 @@
 -- run when module loads
 
-print('starting remote command daemon')
-shell.run('daemon', 'add', core.coreDir() .. '/modules/turtleTools/daemons/remoteCommand')
+print('yay turtles')
