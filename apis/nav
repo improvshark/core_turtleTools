@@ -2,11 +2,11 @@
 wayPointPath = core.coreDir() .. '/modules/turtleTools/apis/.wayPoints'
 
 local function saveWaypoints(points)
-	configman.load(wayPointPath, points)
+	core.loadConfig(wayPointPath, points)
 end
 
 local function loadWaypoints()
-	configman.load(wayPointPath)
+	core.loadConfig(wayPointPath)
 end
 
 function addWaypoint(wayPointTable, nameArg, coordVector, directionArg )
@@ -16,7 +16,7 @@ function addWaypoint(wayPointTable, nameArg, coordVector, directionArg )
 	point.coord = coordVector
 	if directionArg ~= nil then point.direction = directionArg end
 	table.insert (wayPointTable, point)
-	return configman.save(wayPointPath)
+	return core.saveConfig(wayPointPath)
 end
 
 
