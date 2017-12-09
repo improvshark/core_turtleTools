@@ -55,14 +55,14 @@ end
 
 
 local function saveLocation()
-	configman.save(statePath, location)
+	core.saveConfig(statePath, location)
 end
 
 local function loadLocation()
-	temp = configman.load(statePath)
+	temp = core.loadConfig(statePath)
 	if temp == nil then
 		saveLocation()
-		temp = configman.load(statePath)
+		temp = core.loadConfig(statePath)
 	end
 
 	location.coord.x = tonumber(temp.coord.x)
