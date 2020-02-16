@@ -1,6 +1,6 @@
 --pastebin get gTvmKcBU cobble
 
-validCobble = { 'ExtraUtilities:cobblestone_compressed', 'minecraft:cobblestone' };
+validCobble = { 'ExtraUtilities:cobblestone_compressed', 'minecraft:cobblestone', 'extrautils2:compressedcobblestone' };
 
 
 -- find chest
