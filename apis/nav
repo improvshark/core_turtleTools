@@ -1,5 +1,5 @@
 
-wayPointPath = core.coreDir() .. '/modules/turtleTools/apis/.wayPoints'
+wayPointPath = core.coreDir() .. '/usr/turtleTools/apis/.wayPoints'
 
 local function saveWaypoints(points)
 	core.loadConfig(wayPointPath, points)

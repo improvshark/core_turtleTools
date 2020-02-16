@@ -1,7 +1,7 @@
 
 -- Configs
 triesDefault = 4  --have to have at least 1
-statePath = core.coreDir() .. '/modules/turtleTools/.locationState'
+statePath = core.coreDir() .. '/tmp/turtleTools/.locationState'
 
 
 gravelWaitTime = .25

@@ -44,14 +44,14 @@ end
 local function programDisk(x, y, z)
 
   gpsStartup = "f1 = function() shell.run(\"gps host "..x.. " "..y.." "..z.." \") end f2 = function() shell.run(\"repeat\") end parallel.waitForAll(f1,f2)"
-  file = fs.open("/disk/gpsStartup", "w")
-  file.write(gpsStartup)
-  file.close()
+  fileA = fs.open("/disk/gpsStartup", "w")
+  fileA.write(gpsStartup)
+  fileA.close()
 
   diskInstall =" os.setComputerLabel(\"gps\") if fs.exists(\"/startup\") then fs.delete(\"/startup\") end fs.copy(\"/disk/gpsStartup\",\"/startup\") sleep(5) os.reboot() "
-  file = fs.open("/disk/startup", "w")
-  file.write(diskInstall)
-  file.close()
+  fileA = fs.open("/disk/startup", "w")
+  fileA.write(diskInstall)
+  fileA.close()
 
 end
 
