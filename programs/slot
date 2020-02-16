@@ -1,4 +1,3 @@
-
 function slot(amount)
 	for i = 1, amount do
 		while turtle.detect() do turtle.dig() end
@@ -6,6 +5,12 @@ function slot(amount)
 		while turtle.detectUp() do turtle.digUp() end
 		turtle.digDown()
 	end
+end
+
+function next()
+	pos.turnRight()
+	slot(3)
+	pos.turnLeft()
 end
 
 function checkFuel(amount, moveBack)
@@ -21,8 +26,6 @@ function checkFuel(amount, moveBack)
 	end
 	return true
 end
-
-
 
 function checkForApi()
 	if not pos then
@@ -41,7 +44,7 @@ arg = {...}
 if not checkForApi() then return end
 
 
-if tonumber(arg[1]) ~= nil then
+if tonumber(arg[1]) ~= nil and arg[2] == nil then
 	if checkFuel(tonumber(arg[1]), true) ~= false then
 		slot(arg[1])
 		pos.back(arg[1], true)
@@ -51,6 +54,16 @@ elseif tonumber(arg[1]) ~= nil and arg[2] == 'false' then
 		slot(arg[1])
 		moveBack(arg[1])
 	end
+elseif tonumber(arg[1]) ~= nil and tonumber(arg[2]) > 0 then
+
+	for i = 1, arg[2] do
+		if checkFuel(tonumber(arg[1]), true) ~= false then
+			slot(arg[1])
+			pos.back(arg[1], true)
+		end
+		next()
+	end
 else
-	print('bad command')
+	print('usage:')
+	print('slot <lenth> [<count> | <backup>]')
 end

@@ -63,7 +63,7 @@ arg = {...}
 if not checkForApi() then return end
 
 if arg[1] == nil then
-	print('useage:')
+	print('usage:')
 	print('stair <up/down> <hight> - 3 high staircase')
 	print('stair <up2/down2> <hight> - 4 high staircase')
 
@@ -85,7 +85,7 @@ elseif arg[1] == 'down2' and tonumber(arg[2]) ~= nil then
 	end
 else
 	print('unknown command')
-	print('useage:')
+	print('usage:')
 	print('stair <up/down> <hight> - 3 high staircase')
 	print('stair <up2/down2> <hight> - 4 high staircase')
 end

@@ -50,7 +50,7 @@ elseif  arg[1] == 'hijack' then
 elseif  arg[1] == 'restore' then
 	restoreCommands()
 else
-	print('useage:')
+	print('usage:')
 	print('location <set> <x> <y> <z> <f>')
 	print('location <gps> <f>')
 	print('location <get>')
